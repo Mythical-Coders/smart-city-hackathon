@@ -1,0 +1,27 @@
+version: "3"
+services:
+  authentication-service:
+    image: akremzerelli/smart-city:authentication-service
+    ports:
+      - 8081:8081
+
+  citizen-data-service:
+    image: akremzerelli/smart-city:citizen-data-service
+    ports:
+      - 8084:8084
+
+  discovery-server:
+    image: akremzerelli/smart-city:discovery-server
+    ports:
+      - 8761:8761
+
+  impound-data-service:
+    image: akremzerelli/smart-city:impound-data-service
+    ports:
+      - 8082:8082
+
+  places-data-service:
+    image: akremzerelli/smart-city:places-data-service
+    ports:
+      - 8083:8083
+

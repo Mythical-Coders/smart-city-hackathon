@@ -1,0 +1,4 @@
+com/placedataservice/tn/controllers/PlaceController.class
+com/placedataservice/tn/models/Place.class
+com/placedataservice/tn/PlaceDataServiceApplication.class
+com/placedataservice/tn/repository/PlaceRepository.class
