@@ -80,6 +80,7 @@ public class CitizenController {
 		Citizen oldCitizen = citizenRepo.findById(newCitizen.getId()).orElse(null);
 		oldCitizen.setMatricule(newCitizen.getMatricule());
 		oldCitizen.setTelephone(newCitizen.getTelephone());
+		oldCitizen.setCin(newCitizen.getCin());
 
 		return citizenRepo.save(oldCitizen);
 	}

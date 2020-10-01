@@ -17,6 +17,7 @@ import Warning from "@material-ui/icons/Warning";
 import Check from "@material-ui/icons/Check";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SnackbarContent from "../../../components/Snackbar/SnackbarContent.js";
+import localization from "../../tableFeatures/localization";
 
 function PlaceList() {
   const dispatch = useDispatch();
@@ -27,13 +28,28 @@ function PlaceList() {
   const [alertDelete, setAlertDelete] = useState(null);
   const [state, setState] = useState({
     columns: [
-      { title: "Id", field: "id" },
-      { title: "ville", field: "ville" },
-      { title: "postCode", field: "postCode", type: "numeric" },
-      { title: "address", field: "address" },
-      { title: "region", field: "region" },
-      { title: "longitude", field: "longitude", type: "numeric" },
-      { title: "latitude", field: "latitude", type: "numeric" },
+      { title: "خط العرض", field: "latitude", type: "numeric", align: "right" },
+      {
+        title: "خط الطول",
+        field: "longitude",
+        type: "numeric",
+        align: "right",
+      },
+
+      { title: "منطقة", field: "region", align: "right" },
+
+      { title: "عنوان", field: "address", align: "right" },
+
+      {
+        title: "الرمز البريدي",
+        field: "postCode",
+        type: "numeric",
+        align: "right",
+      },
+
+      { title: "المدينة", field: "ville", align: "right" },
+
+      { title: "المعرّف", field: "id", align: "right" },
     ],
     data: [],
   });
@@ -50,7 +66,7 @@ function PlaceList() {
           <SnackbarContent
             message={
               <span>
-                <b>WARNING ALERT:</b> Could not reach data... Refresh Page...
+                <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
               </span>
             }
             close
@@ -71,13 +87,13 @@ function PlaceList() {
       !newData.address ||
       !newData.region ||
       !newData.longitude ||
-      !newData.latitude 
+      !newData.latitude
     ) {
       setAlertAdd(
         <SnackbarContent
           message={
             <span>
-              <b>WARNING ALERT:</b> Empty field(s)...
+              <b> تنبيه تحذير: </b> خانات فارغ ...
             </span>
           }
           close
@@ -99,7 +115,7 @@ function PlaceList() {
           address,
           region,
           longitude,
-          latitude
+          latitude,
         })
       ).then((res) => {
         if (!res)
@@ -107,7 +123,7 @@ function PlaceList() {
             <SnackbarContent
               message={
                 <span>
-                  <b>WARNING ALERT:</b> Bad Request...
+                  <b> تنبيه تحذير: </b> طلب سيئ ...
                 </span>
               }
               close
@@ -115,12 +131,16 @@ function PlaceList() {
               icon={Warning}
             />
           );
-        else
+        else {
+          setState({
+            columns: state.columns,
+            data: [...state.data, res.data],
+          });
           setAlertAdd(
             <SnackbarContent
               message={
                 <span>
-                  <b>SUCCESS ALERT:</b> Place Added...
+                  <b> تنبيه النجاح: </b> تمت إضافة المكان ...{" "}
                 </span>
               }
               close
@@ -128,6 +148,7 @@ function PlaceList() {
               icon={Check}
             />
           );
+        }
       });
     }
   };
@@ -143,13 +164,13 @@ function PlaceList() {
       !newData.address ||
       !newData.region ||
       !newData.longitude ||
-      !newData.latitude 
+      !newData.latitude
     ) {
       setAlertUpdate(
         <SnackbarContent
           message={
             <span>
-              <b>WARNING ALERT:</b> Empty field(s)...
+              <b> تنبيه تحذير: </b> خانات فارغ ...
             </span>
           }
           close
@@ -173,7 +194,7 @@ function PlaceList() {
           address,
           region,
           longitude,
-          latitude
+          latitude,
         })
       ).then((res) => {
         if (!res)
@@ -181,7 +202,7 @@ function PlaceList() {
             <SnackbarContent
               message={
                 <span>
-                  <b>WARNING ALERT:</b> Bad Request...
+                  <b> تنبيه تحذير: </b> طلب سيئ ...
                 </span>
               }
               close
@@ -194,7 +215,7 @@ function PlaceList() {
             <SnackbarContent
               message={
                 <span>
-                  <b>SUCCESS ALERT:</b> Place Updated...
+                  <b> تنبيه النجاح: </b> تم تحديث المكان ...{" "}
                 </span>
               }
               close
@@ -229,7 +250,7 @@ function PlaceList() {
           <SnackbarContent
             message={
               <span>
-                <b>WARNING ALERT:</b> Server ERROR...
+                <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
               </span>
             }
             close
@@ -250,6 +271,7 @@ function PlaceList() {
         <MaterialTable
           title="Editable Example"
           columns={state.columns}
+          localization={localization()}
           icons={tableIcons}
           data={state.data}
           editable={{
@@ -272,7 +294,7 @@ function PlaceList() {
         />
       </>
     );
-} 
+}
 
 PlaceList.propTypes = {
   classes: PropTypes.object.isRequired,

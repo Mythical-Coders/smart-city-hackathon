@@ -5,6 +5,16 @@ import java.util.Set;
 import javax.validation.constraints.*;
 
 public class SignupRequest {
+	
+	private String id;
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	@NotBlank
 	@Size(min = 3, max = 20)
 	private String username;

@@ -38,18 +38,24 @@ export const signIn = (user) => async (dispatch) => {
     return res;
   } catch (err) {
     dispatch({ type: "AUTH_END_LOADING" });
+    return dispatch({
+      type: "SIGNIN_USER_FAILURE",
+      payload: err.response.data,
+    });
   }
 };
 export const logoutUser = () => async (dispatch) => {
   try {
     dispatch({ type: "AUTH_LOADING" });
     dispatch({ type: "LOGOUT_USER_SUCCESS" });
-    dispatch({ type: "PROFILE_LOADING" });
-    dispatch({ type: "CLEAR_PROFILE" });
+    dispatch({ type: "CLEAR_CITIZEN" });
+    dispatch({ type: "CLEAR_IMPOUND" });
+    dispatch({ type: "CLEAR_PLACE" });
+
   } catch (err) {
     dispatch({ type: "AUTH_END_LOADING" });
     dispatch({ type: "PROFILE_END_LOADING" });
-    dispatch({ type: "SET_CURRENT_USER_FAILURE", payload: err.response.data });
+    dispatch({ type: "SET_CURRENT_USER_FAILURE", payload: err });
   }
 };
 export const getAllUsers = () => async (dispatch) => {

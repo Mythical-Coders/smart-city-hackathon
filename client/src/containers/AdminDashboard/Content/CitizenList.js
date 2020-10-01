@@ -17,6 +17,7 @@ import Warning from "@material-ui/icons/Warning";
 import Check from "@material-ui/icons/Check";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SnackbarContent from "../../../components/Snackbar/SnackbarContent.js";
+import localization from "../../tableFeatures/localization";
 
 function CitizenList() {
   const dispatch = useDispatch();
@@ -27,10 +28,10 @@ function CitizenList() {
   const [alertDelete, setAlertDelete] = useState(null);
   const [state, setState] = useState({
     columns: [
-      { title: "Id", field: "id" },
-      { title: "Matricule", field: "matricule" },
-      { title: "Telephone", field: "telephone" },
-     
+      { title: "الهاتف", field: "telephone", align: "right" },
+      { title: "رقم السياره", field: "matricule", align: "right" },
+
+      { title: "المعرّف", field: "id", align: "right" },
     ],
     data: [],
   });
@@ -47,7 +48,7 @@ function CitizenList() {
           <SnackbarContent
             message={
               <span>
-                <b>WARNING ALERT:</b> Could not reach data... Refresh Page...
+                <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
               </span>
             }
             close
@@ -62,15 +63,12 @@ function CitizenList() {
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
-    if (
-      !newData.matricule ||
-      !newData.telephone 
-    ) {
+    if (!newData.matricule || !newData.telephone) {
       setAlertAdd(
         <SnackbarContent
           message={
             <span>
-              <b>WARNING ALERT:</b> Empty field(s)...
+              <b> تنبيه تحذير: </b> خانات فارغ ...
             </span>
           }
           close
@@ -92,7 +90,7 @@ function CitizenList() {
             <SnackbarContent
               message={
                 <span>
-                  <b>WARNING ALERT:</b> Bad Request...
+                  <b> تنبيه تحذير: </b> طلب سيئ ...
                 </span>
               }
               close
@@ -100,12 +98,16 @@ function CitizenList() {
               icon={Warning}
             />
           );
-        else
+        else {
+          setState({
+            columns: state.columns,
+            data: [...state.data,res.data],
+          });
           setAlertAdd(
             <SnackbarContent
               message={
                 <span>
-                  <b>SUCCESS ALERT:</b> Citizen Added...
+                  <b> تنبيه النجاح: </b> تمت إضافة مواطن ...{" "}
                 </span>
               }
               close
@@ -113,6 +115,7 @@ function CitizenList() {
               icon={Check}
             />
           );
+        }
       });
     }
   };
@@ -122,15 +125,12 @@ function CitizenList() {
     setAlertUpdate(null);
     setAlertDelete(null);
     console.log(newData, oldData);
-    if (
-      !newData.matricule ||
-      !newData.telephone 
-    ) {
+    if (!newData.matricule || !newData.telephone) {
       setAlertUpdate(
         <SnackbarContent
           message={
             <span>
-              <b>WARNING ALERT:</b> Empty field(s)...
+              <b> تنبيه تحذير: </b> خانات فارغ ...
             </span>
           }
           close
@@ -154,7 +154,7 @@ function CitizenList() {
             <SnackbarContent
               message={
                 <span>
-                  <b>WARNING ALERT:</b> Bad Request...
+                  <b> تنبيه تحذير: </b> طلب سيئ ...
                 </span>
               }
               close
@@ -167,7 +167,7 @@ function CitizenList() {
             <SnackbarContent
               message={
                 <span>
-                  <b>SUCCESS ALERT:</b> Citizen Updated...
+                  <b> تنبيه النجاح: </b> تم تحديث المواطن ...{" "}
                 </span>
               }
               close
@@ -202,7 +202,7 @@ function CitizenList() {
           <SnackbarContent
             message={
               <span>
-                <b>WARNING ALERT:</b> Server ERROR...
+                <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
               </span>
             }
             close
@@ -225,6 +225,7 @@ function CitizenList() {
           columns={state.columns}
           icons={tableIcons}
           data={state.data}
+          localization={localization()}
           editable={{
             onRowAdd: (newData) =>
               new Promise((resolve) => {

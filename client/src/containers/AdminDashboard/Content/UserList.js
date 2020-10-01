@@ -10,6 +10,7 @@ import Warning from "@material-ui/icons/Warning";
 import Check from "@material-ui/icons/Check";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SnackbarContent from "../../../components/Snackbar/SnackbarContent.js";
+import localization from "../../tableFeatures/localization";
 
 function UserList() {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ function UserList() {
 
       { title: "البريد الإلكتروني", field: "email", align: "right" },
       { title: "اسم المستخدم", field: "username", align: "right" },
-      { title: "هوية شخصية", field: "id", align: "right" },
+      { title: "المعرّف", field: "id", align: "right" },
     ],
     data: [],
   });
@@ -113,7 +114,7 @@ function UserList() {
                 icon={Warning}
               />
             );
-          else
+          else {
             setalertAdd(
               <SnackbarContent
                 message={
@@ -126,13 +127,14 @@ function UserList() {
                 icon={Check}
               />
             );
+          }
         })
         .catch((err) => {
           setalertAdd(
             <SnackbarContent
               message={
                 <span>
-                  <b> تنبيه تحذير: </b> خطأ في الخادم ...
+                  <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
                 </span>
               }
               close
@@ -165,7 +167,7 @@ function UserList() {
           <SnackbarContent
             message={
               <span>
-                <b> تنبيه تحذير: </b> خطأ في الخادم ...
+                <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
               </span>
             }
             close
@@ -182,59 +184,12 @@ function UserList() {
         {alert}
         {alertAdd}
         {alertDelete}
-
         <MaterialTable
           title="قائمة المستخدمين"
           columns={state.columns}
           data={state.data}
           icons={tableIcons}
-          localization={{
-            body: {
-              emptyDataSourceMessage: "لا توجد سجلات لعرضها",
-              addTooltip: "إضافة",
-              deleteTooltip: "حذف",
-              editTooltip: "تحرير",
-              filterRow: {
-                filterTooltip: "تصفية",
-              },
-              editRow: {
-                deleteText: "هل تريد حذف هذا السطر؟",
-                cancelTooltip: "إلغاء",
-                saveTooltip: "حفظ",
-              },
-            },
-            grouping: {
-              placeholder: "سحب",
-              groupedBy: "تجميع حسب:",
-            },
-            header: {
-              actions: "الإجراءات",
-            },
-            pagination: {
-              labelDisplayedRows: "{from}-{to}  من  {count}",
-              labelRowsSelect: "أسطر",
-              labelRowsPerPage: "سطور لكل صفحة:",
-              firstAriaLabel: "الصفحة الأولى",
-              firstTooltip: "الصفحة الأولى",
-              previousAriaLabel: "الصفحة السابقة",
-              previousTooltip: "الصفحة السابقة",
-              nextAriaLabel: "الصفحة التالية",
-              nextTooltip: "الصفحة التالية",
-              lastAriaLabel: "الصفحة الأخيرة",
-              lastTooltip: "الصفحة الأخيرة",
-            },
-            toolbar: {
-              addRemoveColumns: "إضافة أو إزالة الأعمدة",
-              nRowsSelected: "{0} سطر محددة",
-              showColumnsTitle: "إظهار الأعمدة",
-              showColumnsAriaLabel: "إظهار الأعمدة",
-              exportTitle: "تصدير",
-              exportAriaLabel: "تصدير",
-              exportName: "تصدير إلى CSV",
-              searchTooltip: "بحث",
-              searchPlaceholder: "بحث",
-            },
-          }}
+          localization={localization()}
           editable={{
             onRowAdd: (newData) =>
               new Promise((resolve) => {

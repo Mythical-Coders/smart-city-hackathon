@@ -24,7 +24,10 @@ public class Citizen {
 	@NotBlank
 	@Size(max = 8,min = 8)
 	private int telephone;
-
+	
+	@NotBlank
+	@Size(max = 8,min = 8)
+	private int cin;
 
 
 	public String getId() {
@@ -49,6 +52,14 @@ public class Citizen {
 
 	public void setTelephone(int telephone) {
 		this.telephone = telephone;
+	}
+
+	public int getCin() {
+		return cin;
+	}
+
+	public void setCin(int cin) {
+		this.cin = cin;
 	}
 
 
