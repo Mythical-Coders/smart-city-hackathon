@@ -43,10 +43,7 @@ import tn.smartCities.chengApp.model.Impound
 import tn.smartCities.chengApp.preference.AppPreferences
 import tn.smartCities.chengApp.rest.ApiClient
 import tn.smartCities.chengApp.util.PrefUtil
-import java.time.Instant
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
-import java.util.*
+import java.time.LocalDateTime
 
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
@@ -82,7 +79,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         //Citizen object to be assigned when calling the API
         var citizen: Citizen = Citizen()
 
-        val date:Date = Date.from(Instant.now())
+        //val date:Date = Date.from(Instant.now())
+        val date = LocalDateTime.now()
 
         //Permission check for Location
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -139,16 +137,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         }
 
         send_btn.setOnClickListener {
-            println(date)
-            val impound = Impound(0,"",AppPreferences.id,"Place 1",date,citizen.matricule,false,date,date,false,citizen.telephone)
+            val impound = Impound(0,"",AppPreferences.id,"Place 1",date.toString()+"Z",licensePlate.text.toString(),false,date.toString()+"Z",date.toString()+"Z",false,425757)
             launch(Dispatchers.Main){
                 try{
                     progressDialog.show()
                     addImpound(impound){
-                        if (it != null) {
+                        if (it == 200) {
                             Toast.makeText(applicationContext, "تم تسجيل المخالفة",Toast.LENGTH_LONG).show()
                             progressDialog.dismiss()
                         } else {
+
                             Toast.makeText(applicationContext, "الرجاء التثبت من المعطيات",Toast.LENGTH_LONG).show()
                         }
                     }
@@ -280,7 +278,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         return super.dispatchTouchEvent(ev)
     }
 
-    private fun addImpound(impound: Impound, onResult: (Impound?) -> Unit){
+    private fun addImpound(impound: Impound, onResult: (Int?) -> Unit){
         val retrofit = ImpoundApiAdapter.buildService(ApiClient::class.java)
         retrofit.addImpound(impound).enqueue(
             object : Callback<Impound> {
@@ -288,8 +286,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
                     onResult(null)
                 }
                 override fun onResponse(call: Call<Impound>, response: Response<Impound>) {
-                    val addedImpound = response.body()
-                    onResult(addedImpound)
+                    onResult(response.code())
                 }
             }
         )

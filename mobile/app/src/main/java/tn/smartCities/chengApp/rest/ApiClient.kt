@@ -9,9 +9,6 @@ import tn.smartCities.chengApp.model.User
 import tn.smartCities.chengApp.model.UserCredentials
 
 interface ApiClient {
-    @GET("/api/auth/all")
-    suspend fun getAllUsers():Response<List<User>>
-
     @Headers("Content-Type: application/json")
     @POST("/api/auth/signin")
     fun signin(@Body userCredentials: UserCredentials):Call<User>
@@ -20,6 +17,6 @@ interface ApiClient {
     suspend fun getCitizenByMatricule(@Path("matricule") matricule: String): Response<Citizen>
 
     @Headers("Content-Type: application/json")
-    @POST("/api/impound")
+    @POST("/api/impound/")
     fun addImpound(@Body impound: Impound):Call<Impound>
 }

@@ -37,7 +37,7 @@ class AuthenticationActivity : AppCompatActivity(), CoroutineScope by MainScope(
 
         val progressDialog = ProgressDialog(this)
         progressDialog.setMessage("جاري تسجيل الدخول ...")
-        progressDialog.setCancelable(false)
+        progressDialog.setCancelable(true)
 
         var mIsShowPass = false
 

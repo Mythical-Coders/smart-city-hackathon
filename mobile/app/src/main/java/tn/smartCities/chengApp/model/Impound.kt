@@ -1,9 +1,7 @@
 package tn.smartCities.chengApp.model
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.google.gson.annotations.SerializedName
-import java.time.format.DateTimeFormatter
-import java.util.*
+import java.time.LocalDateTime
 
 data class Impound(
 
@@ -20,8 +18,7 @@ data class Impound(
     val idPlace: String,
 
     @SerializedName("impoundDate")
-    @JsonFormat(pattern = "YYYY-MM-dd HH:mm")
-    val impoundDate: Date,
+    val impoundDate: String,
 
     @SerializedName("matricule")
     val matricule: String,
@@ -30,10 +27,10 @@ data class Impound(
     val paid: Boolean,
 
     @SerializedName("paidDate")
-    val paidDate: Date,
+    val paidDate: String,
 
     @SerializedName("releaseDate")
-    val releaseDate: Date,
+    val releaseDate: String,
 
     @SerializedName("released")
     val released: Boolean,
