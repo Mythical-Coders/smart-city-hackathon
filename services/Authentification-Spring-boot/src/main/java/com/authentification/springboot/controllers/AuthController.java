@@ -36,7 +36,7 @@ import com.authentification.springboot.repository.UserRepository;
 import com.authentification.springboot.security.jwt.JwtUtils;
 import com.authentification.springboot.security.services.UserDetailsImpl;
 
-
+//This is a comment 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
