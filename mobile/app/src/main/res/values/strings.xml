@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">chengAPP</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="logout">Log Out</string>
+    <string name="signup">إنشاء حساب</string>
+    <string name="userName">اسم المستخدم</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة السر</string>
+    <string name="logo_desc">this is the app logo (Towing truck)</string>
+    <string name="exit">خروج</string>
+    <string name="password_hint">أدخل كلمة السر</string>
+    <string name="login_hint">أدخل اسم المستخدم</string>
+    <string name="show_hide_button">show/hide button</string>
+    <string name="welcome_text">مرحبا بك %s</string>
+    <string name="app_logo_action_bar">app logo</string>
+    <string name="sign_out_button_action_bar">sign out button</string>
+    <string name="timer_start">5:00</string>
+    <string name="notify_btn_text">إعلام</string>
+    <string name="stop_btn_text">Stop</string>
+    <string name="take_photo_text">خذ صورة</string>
+    <string name="send_btn_text">تسجيل مخالفة</string>
+</resources>

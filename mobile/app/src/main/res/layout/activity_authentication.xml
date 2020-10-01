@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="tn.smartCities.chengApp.activity.AuthenticationActivity">
+
+    <Button
+        android:id="@+id/SigninButton"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="@string/login"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:drawableStart="@drawable/send"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:drawablePadding="10dp"
+        android:background="@drawable/button_round"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.597" />
+
+    <TextView
+        android:id="@+id/loginText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/userName"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/logPassDim"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.534"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.134" />
+
+    <TextView
+        android:id="@+id/passwordText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/password"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/logPassDim"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.539"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.282" />
+
+    <EditText
+        android:id="@+id/passId"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/edit_round"
+        android:drawableEnd="@drawable/password"
+        android:ems="10"
+        android:hint="@string/password_hint"
+        android:inputType="textPassword"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:drawablePadding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.543"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.338"
+        android:autofillHints="" />
+
+    <ImageView
+        android:id="@+id/show_pass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:src="@drawable/show_pass"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.34"
+        android:contentDescription="@string/show_hide_button" />
+
+    <EditText
+        android:id="@+id/loginId"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/edit_round"
+        android:ems="10"
+        android:hint="@string/login_hint"
+        android:inputType="textPersonName"
+        android:drawableEnd="@drawable/user"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:drawablePadding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.542"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.188"
+        android:autofillHints="" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
