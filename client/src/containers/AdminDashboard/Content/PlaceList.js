@@ -11,13 +11,15 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { stylesContent } from "../styles/Styles";
 import { tableIcons } from "../../tableFeatures/tableIcons";
-// import Dashboard from "@material-ui/icons/Dashboard";
-// import Schedule from "@material-ui/icons/Schedule";
+import Dashboard from "@material-ui/icons/Dashboard";
+import Schedule from "@material-ui/icons/Schedule";
 import Warning from "@material-ui/icons/Warning";
 import Check from "@material-ui/icons/Check";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SnackbarContent from "../../../components/Snackbar/SnackbarContent.js";
 import localization from "../../tableFeatures/localization";
+import NavPills from "../../../components/NavPills/NavPills.js";
+import GoogleMapFct from "../../googleMap/GoogleMapFct";
 
 function PlaceList() {
   const dispatch = useDispatch();
@@ -237,7 +239,7 @@ function PlaceList() {
           <SnackbarContent
             message={
               <span>
-                <b>SUCCESS ALERT:</b> Place Deleted...
+                <b> تنبيه النجاح: </b> المكان محذوف ...{" "}
               </span>
             }
             close
@@ -268,29 +270,51 @@ function PlaceList() {
         {alertAdd}
         {alertUpdate}
         {alertDelete}
-        <MaterialTable
-          title="Editable Example"
-          columns={state.columns}
-          localization={localization()}
-          icons={tableIcons}
-          data={state.data}
-          editable={{
-            onRowAdd: (newData) =>
-              new Promise((resolve) => {
-                resolve();
-                addPlace(newData);
-              }),
-            onRowUpdate: (newData, oldData) =>
-              new Promise((resolve) => {
-                resolve();
-                updatePlace(newData, oldData);
-              }),
-            onRowDelete: (oldData) =>
-              new Promise((resolve) => {
-                resolve();
-                deletePlace(oldData);
-              }),
-          }}
+        <NavPills
+          color="chengapp"
+          tabs={[
+            {
+              tabButton: "قائمة أماكن الحجز",
+              tabIcon: Dashboard,
+              tabContent: (
+                <>
+                  <MaterialTable
+                    title="قائمة أماكن الحجز"
+                    columns={state.columns}
+                    localization={localization()}
+                    icons={tableIcons}
+                    data={state.data}
+                    editable={{
+                      onRowAdd: (newData) =>
+                        new Promise((resolve) => {
+                          resolve();
+                          addPlace(newData);
+                        }),
+                      onRowUpdate: (newData, oldData) =>
+                        new Promise((resolve) => {
+                          resolve();
+                          updatePlace(newData, oldData);
+                        }),
+                      onRowDelete: (oldData) =>
+                        new Promise((resolve) => {
+                          resolve();
+                          deletePlace(oldData);
+                        }),
+                    }}
+                  />
+                </>
+              ),
+            },
+            {
+              tabButton: "إضافة مكان الحجز",
+              tabIcon: Schedule,
+              tabContent: (
+                <>
+                  <GoogleMapFct />
+                </>
+              ),
+            },
+          ]}
         />
       </>
     );

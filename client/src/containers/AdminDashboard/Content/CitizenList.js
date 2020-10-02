@@ -101,7 +101,7 @@ function CitizenList() {
         else {
           setState({
             columns: state.columns,
-            data: [...state.data,res.data],
+            data: [...state.data, res.data],
           });
           setAlertAdd(
             <SnackbarContent
@@ -189,7 +189,7 @@ function CitizenList() {
           <SnackbarContent
             message={
               <span>
-                <b>SUCCESS ALERT:</b> Citizen Deleted...
+                <b> تنبيه النجاح: </b> تم حذف مواطن ...{" "}
               </span>
             }
             close
@@ -221,7 +221,7 @@ function CitizenList() {
         {alertUpdate}
         {alertDelete}
         <MaterialTable
-          title="Editable Example"
+          title="قائمة المواطنين"
           columns={state.columns}
           icons={tableIcons}
           data={state.data}

@@ -11,7 +11,7 @@ import ImpoundList from "./Content/ImpoundList";
 
 
 
-const drawerWidth = 256;
+// const drawerWidth = 256;
 
 function AgentDashboard(props) {
   const { classes } = props;

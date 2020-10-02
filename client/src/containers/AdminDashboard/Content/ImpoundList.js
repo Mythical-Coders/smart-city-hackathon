@@ -268,7 +268,7 @@ function ImpoundList() {
           <SnackbarContent
             message={
               <span>
-                <b>SUCCESS ALERT:</b> Impound Deleted...
+                <b> تنبيه النجاح: </b> حذف الحجز ...{" "}
               </span>
             }
             close
@@ -300,7 +300,7 @@ function ImpoundList() {
         {alertUpdate}
         {alertDelete}
         <MaterialTable
-          title="Editable Example"
+          title="قائمة الحجز"
           columns={state.columns}
           localization={localization()}
           icons={tableIcons}
