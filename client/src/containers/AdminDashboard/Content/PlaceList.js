@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   placeDeleteData,
   placeGetAll,
-  placePostData,
   placeUpdateData,
 } from "../../../actions/PlaceActions";
 import MaterialTable from "material-table";
@@ -78,82 +77,6 @@ function PlaceList() {
         );
     });
   }, [dispatch, state.columns]);
-  const addPlace = (newData) => {
-    setAlert(null);
-    setAlertAdd(null);
-    setAlertUpdate(null);
-    setAlertDelete(null);
-    if (
-      !newData.ville ||
-      !newData.postCode ||
-      !newData.address ||
-      !newData.region ||
-      !newData.longitude ||
-      !newData.latitude
-    ) {
-      setAlertAdd(
-        <SnackbarContent
-          message={
-            <span>
-              <b> تنبيه تحذير: </b> خانات فارغ ...
-            </span>
-          }
-          close
-          color="warning"
-          icon={Warning}
-        />
-      );
-    } else {
-      let ville = newData.ville;
-      let postCode = newData.postCode;
-      let address = newData.address;
-      let region = newData.region;
-      let longitude = newData.longitude;
-      let latitude = newData.latitude;
-      dispatch(
-        placePostData({
-          ville,
-          postCode,
-          address,
-          region,
-          longitude,
-          latitude,
-        })
-      ).then((res) => {
-        if (!res)
-          setAlertAdd(
-            <SnackbarContent
-              message={
-                <span>
-                  <b> تنبيه تحذير: </b> طلب سيئ ...
-                </span>
-              }
-              close
-              color="warning"
-              icon={Warning}
-            />
-          );
-        else {
-          setState({
-            columns: state.columns,
-            data: [...state.data, res.data],
-          });
-          setAlertAdd(
-            <SnackbarContent
-              message={
-                <span>
-                  <b> تنبيه النجاح: </b> تمت إضافة المكان ...{" "}
-                </span>
-              }
-              close
-              color="success"
-              icon={Check}
-            />
-          );
-        }
-      });
-    }
-  };
   const updatePlace = (newData, oldData) => {
     setAlert(null);
     setAlertAdd(null);
@@ -285,11 +208,6 @@ function PlaceList() {
                     icons={tableIcons}
                     data={state.data}
                     editable={{
-                      onRowAdd: (newData) =>
-                        new Promise((resolve) => {
-                          resolve();
-                          addPlace(newData);
-                        }),
                       onRowUpdate: (newData, oldData) =>
                         new Promise((resolve) => {
                           resolve();

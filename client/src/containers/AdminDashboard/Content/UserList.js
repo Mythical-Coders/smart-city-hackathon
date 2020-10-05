@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllUsers, signUp, deleteUser } from "../../../actions/AuthActions";
+import {
+  getAllUsers,
+  signUp,
+  deleteUser,
+  updateUser,
+} from "../../../actions/AuthActions";
 import MaterialTable from "material-table";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
@@ -145,6 +150,90 @@ function UserList() {
         });
     }
   };
+  const update = (newData, oldData) => {
+    setAlert(null);
+    setalertDelete(null);
+    if (
+      !newData.username ||
+      !newData.email ||
+      !newData.password ||
+      !newData.roles
+    ) {
+      setalertAdd(
+        <SnackbarContent
+          message={
+            <span>
+              <b> تنبيه تحذير: </b> خانات فارغ ...
+            </span>
+          }
+          close
+          color="warning"
+          icon={Warning}
+        />
+      );
+    } else {
+      let id = oldData.id;
+      let username = newData.username;
+      let email = newData.email;
+      let password = newData.password;
+      let roles;
+      switch (newData.roles[0].name) {
+        case "ROLE_ADMIN":
+          roles = ["admin"];
+          break;
+        case "ROLE_RECEPTIVE":
+          roles = ["receptive"];
+          break;
+        default:
+          roles = ["driver"];
+          break;
+      }
+      dispatch(updateUser({ id,username, email, password, roles }))
+        .then((res) => {
+          if (res.type === "SIGNUP_USER_FAILURE")
+            setalertAdd(
+              <SnackbarContent
+                message={
+                  <span>
+                    <b> تنبيه تحذير: </b> طلب سيئ ...
+                  </span>
+                }
+                close
+                color="warning"
+                icon={Warning}
+              />
+            );
+          else {
+            setalertAdd(
+              <SnackbarContent
+                message={
+                  <span>
+                    <b> تنبيه النجاح: </b> تمت تحديث المستخدم ...
+                  </span>
+                }
+                close
+                color="success"
+                icon={Check}
+              />
+            );
+          }
+        })
+        .catch((err) => {
+          setalertAdd(
+            <SnackbarContent
+              message={
+                <span>
+                  <b> تنبيه تحذير: </b> تعذر الوصول إلى البيانات ...
+                </span>
+              }
+              close
+              color="warning"
+              icon={Warning}
+            />
+          );
+        });
+    }
+  };
   const deleteOneUser = (oldData) => {
     dispatch(deleteUser(oldData.id)).then((res) => {
       setAlert(null);
@@ -195,6 +284,11 @@ function UserList() {
               new Promise((resolve) => {
                 resolve();
                 addUser(newData);
+              }),
+            onRowUpdate: (newData, oldData) =>
+              new Promise((resolve) => {
+                resolve();
+                update(newData, oldData);
               }),
             onRowDelete: (oldData) =>
               new Promise((resolve) => {

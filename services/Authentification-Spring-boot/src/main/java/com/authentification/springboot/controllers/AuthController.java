@@ -145,7 +145,7 @@ public class AuthController {
 			oldUser.setEmail(signUpRequest.getEmail());
 		} else
 			return ResponseEntity.badRequest().body(new MessageResponse("Email is already in use!"));
-		oldUser.setPassword(encoder.encode(signUpRequest.getPassword()));
+
 		Set<String> strRoles = signUpRequest.getRoles();
 		Set<Role> roles = new HashSet<>();
 
