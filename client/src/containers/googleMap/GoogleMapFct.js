@@ -8,7 +8,7 @@ import { RegionDropdown } from "react-country-region-selector";
 import Input from "@material-ui/core/Input";
 import GridContainer from "../../components/Grid/GridContainer.js";
 import GridItem from "../../components/Grid/GridItem.js";
-import styles from "../../assets/jss/material-kit-react/views/componentsSections/javascriptStyles"
+import styles from "../../assets/jss/material-kit-react/views/componentsSections/javascriptStyles";
 import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -25,25 +25,24 @@ const mapStyles = {
   width: "100%",
   height: "100%",
 };
-const dataPlaces = [
-  { latitude: 35.8245, longitude: 10.6346, message: "sousse" },
-  { latitude: 35.7643, longitude: 10.8113, message: "monastir" },
-];
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 Transition.displayName = "Transition";
 
 function GoogleMapFct(props) {
+  const placeData = useSelector((state) => state.place);
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [stores, setStores] = useState(dataPlaces);
-  const [newMark, setNewMark] = useState();
+  const [stores, setStores] = useState(null);
+  const [newMark, setNewMark] = useState(null);
   const [address, setaddress] = useState("");
   const [postCode, setpostCode] = useState("");
   const [ville, setville] = useState("");
   const [region, setregion] = useState("");
   const [classicModal, setClassicModal] = useState(false);
+  const [object, setObject] = useState("");
+  const [body, setBody] = useState("");
   const handleChange = (e, name) => {
     const user = {};
     if (name === "region") user[name] = e;
@@ -67,21 +66,34 @@ function GoogleMapFct(props) {
   };
   const handleSave = async (e) => {
     e.preventDefault();
-    setClassicModal(true)
-    // let longitude = newMark.longitude;
-    // let latitude = newMark.latitude;
-    // dispatch(
-    //   placePostData({
-    //     ville,
-    //     postCode,
-    //     address,
-    //     region,
-    //     longitude,
-    //     latitude,
-    //   })
-    // ).then((res) => {
-    //   console.log(res)
-    // });
+    if (!newMark || !ville || !postCode || !address || !region) {
+      setObject("طلب سيئ");
+      setBody("يجب إدخال كل البيانات و تحديد مكان  الحاجز في الخريطة ");
+      setClassicModal(true);
+    } else {
+      let longitude = newMark.longitude;
+      let latitude = newMark.latitude;
+      dispatch(
+        placePostData({
+          ville,
+          postCode,
+          address,
+          region,
+          longitude,
+          latitude,
+        })
+      ).then((res) => {
+        if (res) {
+          setObject("تنبيه النجاح");
+          setBody("تمت إضافة المكان ");
+          setClassicModal(true);
+        } else {
+          setObject("تنبيه تحذير");
+          setBody("Server Error");
+          setClassicModal(true);
+        }
+      });
+    }
   };
   const displayMarkers = () => {
     return stores.map((store, index) => {
@@ -93,7 +105,14 @@ function GoogleMapFct(props) {
             lat: store.latitude,
             lng: store.longitude,
           }}
-          onClick={() => console.log(store.message)}
+          onClick={() => {
+            setObject("تفاصيل مكان الحجز");
+            setBody(store.address+" : الرمز البريدي\n"+
+            store.postCode+" : العنوان\n"+
+            store.ville+" : المدينة\n"+
+            store.region+" : منطقة\n");
+            setClassicModal(true);
+          }}
         />
       );
     });
@@ -105,8 +124,10 @@ function GoogleMapFct(props) {
       message: "nouvelle",
     });
   };
+
   useEffect(() => {
-    if (newMark) setStores([...dataPlaces, newMark]);
+    if (newMark) setStores([...placeData.data, newMark]);
+    else setStores(placeData.data);
   }, [newMark]);
   return (
     <>
@@ -119,7 +140,7 @@ function GoogleMapFct(props) {
             initialCenter={{ lat: 33.8869, lng: 9.5375 }}
             onClick={(e, map, coord) => addNewMark(e, map, coord)}
           >
-            {displayMarkers()}
+            {stores ? displayMarkers() : ""}
           </Map>
         </GridItem>
         <GridItem xs={12} sm={12} md={6}>
@@ -145,6 +166,7 @@ function GoogleMapFct(props) {
             <Input
               id="postCode"
               name="postCode"
+              type="number"
               inputProps={{
                 placeholder: "الرمز البريدي",
               }}
@@ -185,63 +207,45 @@ function GoogleMapFct(props) {
         </GridItem>
       </GridContainer>
       <Dialog
-            classes={{
-              root: classes.center,
-              paper: classes.modal,
-            }}
-            open={classicModal}
-            TransitionComponent={Transition}
-            keepMounted
-            onClose={() => setClassicModal(false)}
-            aria-labelledby="classic-modal-slide-title"
-            aria-describedby="classic-modal-slide-description"
+        classes={{
+          root: classes.center,
+          paper: classes.modal,
+        }}
+        open={classicModal}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setClassicModal(false)}
+        aria-labelledby="classic-modal-slide-title"
+        aria-describedby="classic-modal-slide-description"
+      >
+        <DialogTitle
+          id="classic-modal-slide-title"
+          disableTypography
+          className={classes.modalHeader}
+        >
+          <IconButton
+            className={classes.modalCloseButton}
+            key="close"
+            aria-label="Close"
+            color="inherit"
+            onClick={() => setClassicModal(false)}
           >
-            <DialogTitle
-              id="classic-modal-slide-title"
-              disableTypography
-              className={classes.modalHeader}
-            >
-              <IconButton
-                className={classes.modalCloseButton}
-                key="close"
-                aria-label="Close"
-                color="inherit"
-                onClick={() => setClassicModal(false)}
-              >
-                <Close className={classes.modalClose} />
-              </IconButton>
-              <h4 className={classes.modalTitle}>Modal title</h4>
-            </DialogTitle>
-            <DialogContent
-              id="classic-modal-slide-description"
-              className={classes.modalBody}
-            >
-              <p>
-                Far far away, behind the word mountains, far from the countries
-                Vokalia and Consonantia, there live the blind texts. Separated
-                they live in Bookmarksgrove right at the coast of the Semantics,
-                a large language ocean. A small river named Duden flows by their
-                place and supplies it with the necessary regelialia. It is a
-                paradisematic country, in which roasted parts of sentences fly
-                into your mouth. Even the all-powerful Pointing has no control
-                about the blind texts it is an almost unorthographic life One
-                day however a small line of blind text by the name of Lorem
-                Ipsum decided to leave for the far World of Grammar.
-              </p>
-            </DialogContent>
-            <DialogActions className={classes.modalFooter}>
-              <Button color="transparent" simple>
-                Nice Button
-              </Button>
-              <Button
-                onClick={() => setClassicModal(false)}
-                color="danger"
-                simple
-              >
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
+            <Close className={classes.modalClose} />
+          </IconButton>
+          <h4 className={classes.modalTitle}>{object}</h4>
+        </DialogTitle>
+        <DialogContent
+          id="classic-modal-slide-description"
+          className={classes.modalBody}
+        >
+          {body}
+        </DialogContent>
+        <DialogActions className={classes.modalFooter}>
+          <Button onClick={() => setClassicModal(false)} color="danger" simple>
+            أغلق
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
