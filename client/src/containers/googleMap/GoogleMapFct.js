@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
-import { placeGetAll, placePostData } from "../../actions/PlaceActions";
+import { placePostData } from "../../actions/PlaceActions";
 import Button from "../../components/CustomButtons/Button.js";
 import { RegionDropdown } from "react-country-region-selector";
 import Input from "@material-ui/core/Input";
@@ -17,7 +17,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Slide from "@material-ui/core/Slide";
 
 // @material-ui/icons
-import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import Close from "@material-ui/icons/Close";
 
 const useStyles = makeStyles(styles);
@@ -60,6 +59,7 @@ function GoogleMapFct(props) {
         break;
       case "region":
         setregion(user.region);
+        break;
       default:
         break;
     }
@@ -128,7 +128,7 @@ function GoogleMapFct(props) {
   useEffect(() => {
     if (newMark) setStores([...placeData.data, newMark]);
     else setStores(placeData.data);
-  }, [newMark]);
+  }, [newMark,placeData.data]);
   return (
     <>
       <GridContainer>
