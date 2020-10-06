@@ -36,15 +36,15 @@ function UserList() {
         },
         align: "right",
       },
-      { title: "كلمه السر", field: "password", align: "right" },
+      { title: "كلمه السر", field: "password", align: "right" ,editable:"onAdd"},
 
       { title: "البريد الإلكتروني", field: "email", align: "right" },
       { title: "اسم المستخدم", field: "username", align: "right" },
-      { title: "المعرّف", field: "id", align: "right" },
+      { title: "المعرّف", field: "id", align: "right", editable:"never" },
     ],
     data: [],
   });
-  useEffect(() => {
+  const getData = () => {
     dispatch(getAllUsers()).then((res) => {
       if (res) {
         setState({
@@ -66,7 +66,10 @@ function UserList() {
           />
         );
     });
-  }, [dispatch, state.columns]);
+  };
+  useEffect(() => {
+    getData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const addUser = (newData) => {
     setAlert(null);
     setalertDelete(null);
@@ -120,6 +123,7 @@ function UserList() {
               />
             );
           else {
+            getData();
             setalertAdd(
               <SnackbarContent
                 message={
@@ -175,7 +179,7 @@ function UserList() {
       let id = oldData.id;
       let username = newData.username;
       let email = newData.email;
-      let password = newData.password;
+      let password = "newData.password";
       let roles;
       switch (newData.roles[0].name) {
         case "ROLE_ADMIN":
@@ -188,7 +192,7 @@ function UserList() {
           roles = ["driver"];
           break;
       }
-      dispatch(updateUser({ id,username, email, password, roles }))
+      dispatch(updateUser({ id, username, email, password, roles }))
         .then((res) => {
           if (res.type === "SIGNUP_USER_FAILURE")
             setalertAdd(
@@ -204,11 +208,13 @@ function UserList() {
               />
             );
           else {
+            getData();
+
             setalertAdd(
               <SnackbarContent
                 message={
                   <span>
-                    <b> تنبيه النجاح: </b> تمت تحديث المستخدم ...
+                    <b> تنبيه النجاح: </b> تمت تحديث المستخدم ... 
                   </span>
                 }
                 close
@@ -238,7 +244,8 @@ function UserList() {
     dispatch(deleteUser(oldData.id)).then((res) => {
       setAlert(null);
       setalertAdd(null);
-      if (res)
+      if (res) {
+        getData();
         setalertDelete(
           <SnackbarContent
             message={
@@ -251,7 +258,7 @@ function UserList() {
             icon={Check}
           />
         );
-      else
+      } else
         setalertDelete(
           <SnackbarContent
             message={

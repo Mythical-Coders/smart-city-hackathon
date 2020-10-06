@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Switch,  Route, Redirect } from "react-router-dom";
+import { Switch,  Route } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AdminDashboard from "./containers/AdminDashboard/AdminDashboard";
 import SignInSide from "./containers/SignIn/SignInSide";
@@ -14,8 +14,8 @@ function App() {
         <CssBaseline />
         <Switch>
           {/* Landing page*/}
-          <Route path="/signin" exact component={SignInSide} />
-          <Redirect to="/signin" />
+          <Route path="/"  component={SignInSide} />
+
         </Switch>
       </div>
     );

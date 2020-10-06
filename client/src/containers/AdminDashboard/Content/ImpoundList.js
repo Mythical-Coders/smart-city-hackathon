@@ -58,7 +58,6 @@ function ImpoundList() {
 
       {
         title: "بطاقة الهوية الوطنية",
-        field: "cin",
         type: "numeric",
         align: "right",
       },
@@ -69,11 +68,11 @@ function ImpoundList() {
 
       { title: " معرّف السائق", field: "idDriver", align: "right" },
 
-      { title: "المعرّف", field: "id", align: "right" },
+      { title: "المعرّف", field: "id", align: "right"  ,editable:"never"},
     ],
     data: [],
   });
-  useEffect(() => {
+  const getData = () => {
     dispatch(impoundGetAll()).then((res) => {
       if (res) {
         setState({
@@ -95,7 +94,10 @@ function ImpoundList() {
           />
         );
     });
-  }, [dispatch, state.columns]);
+  };
+  useEffect(() => {
+    getData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const addImpound = (newData) => {
     setAlert(null);
     setAlertAdd(null);
@@ -158,10 +160,8 @@ function ImpoundList() {
             />
           );
         else {
-          setState({
-            columns: state.columns,
-            data: [...state.data, res.data],
-          });
+          getData();
+
           setAlertAdd(
             <SnackbarContent
               message={
@@ -241,7 +241,9 @@ function ImpoundList() {
               icon={Warning}
             />
           );
-        else
+        else {
+          getData();
+
           setAlertUpdate(
             <SnackbarContent
               message={
@@ -254,6 +256,7 @@ function ImpoundList() {
               icon={Check}
             />
           );
+        }
       });
     }
   };
@@ -263,7 +266,9 @@ function ImpoundList() {
       setAlertAdd(null);
       setAlertUpdate(null);
       setAlertDelete(null);
-      if (res)
+      if (res) {
+        getData();
+
         setAlertDelete(
           <SnackbarContent
             message={
@@ -276,7 +281,7 @@ function ImpoundList() {
             icon={Check}
           />
         );
-      else
+      } else
         setAlertDelete(
           <SnackbarContent
             message={

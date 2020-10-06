@@ -8,6 +8,7 @@ import Header from "./Header";
 import { stylesPaperbase, theme, Copyright } from "./styles/Styles";
 import { Switch, Redirect, Route } from "react-router-dom";
 import ImpoundList from "./Content/ImpoundList";
+import EditImpound from "./Content/EditImpound";
 
 
 
@@ -42,7 +43,9 @@ function AgentDashboard(props) {
           <Header onDrawerToggle={handleDrawerToggle} />
           <main className={classes.main}>
             <Switch>
-              <Route path={"/agent_dashboard/impounds"} exact component={ImpoundList} />
+              <Route path={"/agent_dashboard/impounds"}  component={ImpoundList} />
+              <Route path={"/agent_dashboard/impound/:id"}  component={EditImpound} />
+
               <Redirect to={"/agent_dashboard/impounds"} />
             </Switch>
           </main>

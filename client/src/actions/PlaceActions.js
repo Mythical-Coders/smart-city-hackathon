@@ -24,7 +24,7 @@ export const placeUpdateData = (place) => async (dispatch) => {
   try {
     dispatch({ type: "PLACE_LOADING" });
     const res = await apiCallPlace("/", "put",place);
-    dispatch(placeGetAll());
+    dispatch({ type: "PLACE_END_LOADING" });
     return res;
   } catch (err) {
     dispatch({ type: "PLACE_END_LOADING" });
@@ -34,7 +34,7 @@ export const placePostData = (place) => async (dispatch) => {
   try {
     dispatch({ type: "PLACE_LOADING" });
     const res = await apiCallPlace("/", "post",place);
-    dispatch(placeGetAll());
+    dispatch({ type: "PLACE_END_LOADING" });
 
     return res;
   } catch (err) {
@@ -45,7 +45,7 @@ export const placeDeleteData = (id) => async (dispatch) => {
     try {
       dispatch({ type: "PLACE_LOADING" });
       const res = await apiCallPlace("/"+id, "delete");
-      dispatch(placeGetAll());
+      dispatch({ type: "PLACE_END_LOADING" });
   
       return res;
     } catch (err) {

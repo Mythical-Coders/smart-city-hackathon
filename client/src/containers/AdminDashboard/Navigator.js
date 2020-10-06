@@ -13,6 +13,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import DnsRoundedIcon from "@material-ui/icons/DnsRounded";
 // import PermMediaOutlinedIcon from "@material-ui/icons/PhotoSizeSelectActual";
 import PublicIcon from "@material-ui/icons/Public";
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsEthernetIcon from "@material-ui/icons/SettingsEthernet";
 // import SettingsInputComponentIcon from "@material-ui/icons/SettingsInputComponent";
 import TimerIcon from "@material-ui/icons/Timer";
@@ -43,6 +44,11 @@ const defaultCategories = [
         id: "المواطنين",
         icon: <SettingsEthernetIcon />,
         link: "/admin_dashboard/citizens",
+      },
+      {
+        id: "ملفات تعريف المستخدمين",
+        icon: <AccountBoxIcon />,
+        link: "/admin_dashboard/profiles",
       },
     ],
   },

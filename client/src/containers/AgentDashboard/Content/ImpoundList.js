@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import {
   impoundGetAll,
   impoundUpdateData,
@@ -9,19 +10,22 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import { stylesContent } from "../styles/Styles";
 import { tableIcons } from "../../tableFeatures/tableIcons";
-import Dashboard from "@material-ui/icons/Dashboard";
-import Schedule from "@material-ui/icons/Schedule";
+// import Dashboard from "@material-ui/icons/Dashboard";
+// import Schedule from "@material-ui/icons/Schedule";
 import Warning from "@material-ui/icons/Warning";
 import Check from "@material-ui/icons/Check";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SnackbarContent from "../../../components/Snackbar/SnackbarContent.js";
 import localization from "../../tableFeatures/localization";
-import NavPills from "../../../components/NavPills/NavPills.js";
+
 function ImpoundList() {
+  const history = useHistory();
   const dispatch = useDispatch();
   const impoundData = useSelector((state) => state.impound);
   const [alert, setAlert] = useState(null);
+  const [alertAdd, setAlertAdd] = useState(null);
   const [alertUpdate, setAlertUpdate] = useState(null);
+  const [alertDelete, setAlertDelete] = useState(null);
   const [state, setState] = useState({
     columns: [
       {
@@ -34,7 +38,7 @@ function ImpoundList() {
       {
         title: "اطلق سراح",
         field: "released",
-        lookup: { true: "Yes", false: "No" },
+        lookup: { true: "نعم", false: "لا" },
         align: "right",
       },
       { title: "تاريخ الدفع", field: "paidDate", type: "date", align: "right" },
@@ -42,7 +46,7 @@ function ImpoundList() {
       {
         title: "دفع",
         field: "paid",
-        lookup: { true: "Yes", false: "No" },
+        lookup: { true: "نعم", false: "لا" },
         align: "right",
       },
       {
@@ -50,26 +54,44 @@ function ImpoundList() {
         field: "impoundDate",
         type: "date",
         align: "right",
+        editable: "never",
       },
 
       {
         title: "بطاقة الهوية الوطنية",
         field: "cin",
-        type: "numeric",
         align: "right",
+        editable: "never",
+        hidden: true,
       },
 
-      { title: "الهاتف", field: "telephone", type: "numeric", align: "right" },
+      {
+        title: "الهاتف",
+        field: "telephone",
+        type: "numeric",
+        align: "right",
+        editable: "never",
+      },
 
-      { title: "رقم السياره", field: "matricule", align: "right" },
+      {
+        title: "رقم السياره",
+        field: "matricule",
+        align: "right",
+        editable: "never",
+      },
 
-      { title: " معرّف السائق", field: "idDriver", align: "right" },
+      {
+        title: " معرّف السائق",
+        field: "idDriver",
+        align: "right",
+        hidden: true,
+      },
 
-      { title: "المعرّف", field: "id", align: "right" },
+      { title: "المعرّف", field: "id", align: "right", hidden: true },
     ],
     data: [],
   });
-  useEffect(() => {
+  const getData = () => {
     dispatch(impoundGetAll()).then((res) => {
       if (res) {
         setState({
@@ -86,16 +108,21 @@ function ImpoundList() {
               </span>
             }
             close
-            color="danger"
+            color="warning"
             icon={Warning}
           />
         );
     });
-  }, [dispatch, state.columns]);
+  };
+  useEffect(() => {
+    getData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateImpound = (newData, oldData) => {
     setAlert(null);
+    setAlertAdd(null);
     setAlertUpdate(null);
+    setAlertDelete(null);
     console.log(newData, oldData);
     if (
       !newData.idDriver ||
@@ -112,7 +139,7 @@ function ImpoundList() {
             </span>
           }
           close
-          color="danger"
+          color="warning"
           icon={Warning}
         />
       );
@@ -150,11 +177,13 @@ function ImpoundList() {
                 </span>
               }
               close
-              color="danger"
+              color="warning"
               icon={Warning}
             />
           );
-        else
+        else {
+          getData();
+
           setAlertUpdate(
             <SnackbarContent
               message={
@@ -167,6 +196,7 @@ function ImpoundList() {
               icon={Check}
             />
           );
+        }
       });
     }
   };
@@ -176,42 +206,25 @@ function ImpoundList() {
     return (
       <>
         {alert}
+        {alertAdd}
         {alertUpdate}
-        <NavPills
-          color="chengapp"
-          tabs={[
-            {
-              tabButton: "قائمة الحجز",
-              tabIcon: Dashboard,
-              tabContent: (
-                <>
-                  <MaterialTable
-                    title="قائمة الحجز"
-                    columns={state.columns}
-                    localization={localization()}
-                    icons={tableIcons}
-                    data={state.data}
-                    editable={{
-                      onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve) => {
-                          resolve();
-                          updateImpound(newData, oldData);
-                        }),
-                    }}
-                  />
-                </>
-              ),
-            },
-            {
-              tabButton: "إعدادات الحجز",
-              tabIcon: Schedule,
-              tabContent: (
-                <>
-                  <h1>Empty</h1>
-                </>
-              ),
-            },
-          ]}
+        {alertDelete}
+        <MaterialTable
+          title="قائمة الحجز"
+          columns={state.columns}
+          localization={localization()}
+          icons={tableIcons}
+          data={state.data}
+          onRowClick={(e, rowData) =>
+            history.push("/agent_dashboard/impound/" + rowData.id)
+          }
+          // editable={{
+          //   onRowUpdate: (newData, oldData) =>
+          //     new Promise((resolve) => {
+          //       resolve();
+          //       updateImpound(newData, oldData);
+          //     }),
+          // }}
         />
       </>
     );

@@ -30,12 +30,16 @@ function CitizenList() {
     columns: [
       { title: "الهاتف", field: "telephone", align: "right" },
       { title: "رقم السياره", field: "matricule", align: "right" },
-
-      { title: "المعرّف", field: "id", align: "right" },
+      {
+        title: "بطاقة الهوية الوطنية",
+        field: "cin",
+        align: "right",
+      },
+      { title: "المعرّف", field: "id", align: "right"  ,editable:"never"},
     ],
     data: [],
   });
-  useEffect(() => {
+  const getData = () => {
     dispatch(citizenGetAll()).then((res) => {
       if (res) {
         setState({
@@ -57,13 +61,16 @@ function CitizenList() {
           />
         );
     });
-  }, [dispatch, state.columns]);
+  };
+  useEffect(() => {
+    getData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const addCitizen = (newData) => {
     setAlert(null);
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
-    if (!newData.matricule || !newData.telephone) {
+    if (!newData.matricule || !newData.telephone || !newData.cin) {
       setAlertAdd(
         <SnackbarContent
           message={
@@ -79,10 +86,13 @@ function CitizenList() {
     } else {
       let matricule = newData.matricule;
       let telephone = newData.telephone;
+      let cin = newData.cin;
+
       dispatch(
         citizenPostData({
           matricule,
           telephone,
+          cin
         })
       ).then((res) => {
         if (!res)
@@ -99,10 +109,7 @@ function CitizenList() {
             />
           );
         else {
-          setState({
-            columns: state.columns,
-            data: [...state.data, res.data],
-          });
+          getData();
           setAlertAdd(
             <SnackbarContent
               message={
@@ -125,7 +132,7 @@ function CitizenList() {
     setAlertUpdate(null);
     setAlertDelete(null);
     console.log(newData, oldData);
-    if (!newData.matricule || !newData.telephone) {
+    if (!newData.matricule || !newData.telephone|| !newData.cin) {
       setAlertUpdate(
         <SnackbarContent
           message={
@@ -142,11 +149,14 @@ function CitizenList() {
       let id = oldData.id;
       let matricule = newData.matricule;
       let telephone = newData.telephone;
+      let cin = newData.cin;
+
       dispatch(
         citizenUpdateData({
           id,
           matricule,
           telephone,
+          cin
         })
       ).then((res) => {
         if (!res)
@@ -162,7 +172,8 @@ function CitizenList() {
               icon={Warning}
             />
           );
-        else
+        else {
+          getData();
           setAlertUpdate(
             <SnackbarContent
               message={
@@ -175,6 +186,7 @@ function CitizenList() {
               icon={Check}
             />
           );
+        }
       });
     }
   };
@@ -184,7 +196,9 @@ function CitizenList() {
       setAlertAdd(null);
       setAlertUpdate(null);
       setAlertDelete(null);
-      if (res)
+      if (res) {
+        getData();
+
         setAlertDelete(
           <SnackbarContent
             message={
@@ -197,7 +211,7 @@ function CitizenList() {
             icon={Check}
           />
         );
-      else
+      } else
         setAlertDelete(
           <SnackbarContent
             message={

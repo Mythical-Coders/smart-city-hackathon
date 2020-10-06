@@ -40,4 +40,13 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
       ...composeToken(token),
     },
   });
-export { apiCallAuth, apiCallImpound, apiCallPlace, apiCallCitizen };
+  const apiCallProfile = (url, method, body = {}, token = "") =>
+  axios({
+    method,
+    url: `http://localhost:8086/api/profile${url}`,
+    data: body,
+    headers: {
+      ...composeToken(token),
+    },
+  });
+export { apiCallAuth, apiCallImpound, apiCallPlace, apiCallCitizen, apiCallProfile };

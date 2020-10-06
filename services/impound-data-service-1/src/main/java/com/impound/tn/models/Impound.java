@@ -27,7 +27,7 @@ public class Impound {
 	private int telephone;
 
 	@Size(max = 8)
-	private int cin;
+	private String cin;
 	@NotBlank
 	private String idDriver;
 	@NotBlank
@@ -64,11 +64,11 @@ public class Impound {
 		this.telephone = telephone;
 	}
 
-	public int getCin() {
+	public String getCin() {
 		return cin;
 	}
 
-	public void setCin(int cin) {
+	public void setCin(String cin) {
 		this.cin = cin;
 	}
 

@@ -48,6 +48,15 @@ public class ImpoundController {
 	public Impound GetImpound(@PathVariable String id) {
 		return impoundRepo.findById(id).orElse(null);
 	}
+	@ApiOperation("Get Impound by Driver Id")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully get Impound by Driver ID"),
+			@ApiResponse(code = 401, message = "The request has not been applied because it lacks valid authentication credentials for the target resource"),
+			@ApiResponse(code = 403, message = "The server understood the request but refuses to authorize it"),
+			@ApiResponse(code = 404, message = "The resource  not found") })
+	@GetMapping("/driver/{idDriver}")
+	public List<Impound> GetImpoundDriverId(@PathVariable String idDriver) {
+		return impoundRepo.findByIdDriver(idDriver);
+	}
 
 	@ApiOperation("Add Impound")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully add Impound"),

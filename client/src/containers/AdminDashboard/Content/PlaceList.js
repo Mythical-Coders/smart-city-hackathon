@@ -50,11 +50,11 @@ function PlaceList() {
 
       { title: "المدينة", field: "ville", align: "right" },
 
-      { title: "المعرّف", field: "id", align: "right" },
+      { title: "المعرّف", field: "id", align: "right"  ,editable:"never"},
     ],
     data: [],
   });
-  useEffect(() => {
+  const getData = () => {
     dispatch(placeGetAll()).then((res) => {
       if (res) {
         setState({
@@ -76,7 +76,10 @@ function PlaceList() {
           />
         );
     });
-  }, [dispatch, state.columns]);
+  };
+  useEffect(() => {
+    getData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const updatePlace = (newData, oldData) => {
     setAlert(null);
     setAlertAdd(null);
@@ -135,7 +138,8 @@ function PlaceList() {
               icon={Warning}
             />
           );
-        else
+        else {
+          getData();
           setAlertUpdate(
             <SnackbarContent
               message={
@@ -148,6 +152,7 @@ function PlaceList() {
               icon={Check}
             />
           );
+        }
       });
     }
   };
@@ -157,7 +162,8 @@ function PlaceList() {
       setAlertAdd(null);
       setAlertUpdate(null);
       setAlertDelete(null);
-      if (res)
+      if (res) {
+        getData();
         setAlertDelete(
           <SnackbarContent
             message={
@@ -170,7 +176,7 @@ function PlaceList() {
             icon={Check}
           />
         );
-      else
+      } else
         setAlertDelete(
           <SnackbarContent
             message={

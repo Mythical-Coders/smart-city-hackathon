@@ -11,6 +11,7 @@ import { Switch, Redirect, Route } from "react-router-dom";
 import ImpoundList from "./Content/ImpoundList";
 import PlaceList from "./Content/PlaceList";
 import CitizenList from "./Content/CitizenList";
+import ProfileList from "./Content/ProfileList";
 
 
 const drawerWidth = 256;
@@ -48,6 +49,7 @@ function AdminDashboard(props) {
               <Route path={"/admin_dashboard/impounds"} exact component={ImpoundList} />
               <Route path={"/admin_dashboard/places"} exact component={PlaceList} />
               <Route path={"/admin_dashboard/citizens"} exact component={CitizenList} />
+              <Route path={"/admin_dashboard/profiles"} exact component={ProfileList} />
 
               <Redirect to={"/admin_dashboard/users"} />
             </Switch>
