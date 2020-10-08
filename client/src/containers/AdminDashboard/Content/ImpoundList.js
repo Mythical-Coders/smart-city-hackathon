@@ -38,7 +38,7 @@ function ImpoundList() {
       {
         title: "اطلق سراح",
         field: "released",
-        lookup: { true: "Yes", false: "No" },
+        lookup: { true: "نعم", false: "لا" },
         align: "right",
       },
       { title: "تاريخ الدفع", field: "paidDate", type: "date", align: "right" },
@@ -46,7 +46,7 @@ function ImpoundList() {
       {
         title: "دفع",
         field: "paid",
-        lookup: { true: "Yes", false: "No" },
+        lookup: { true: "نعم", false: "لا" },
         align: "right",
       },
       {
@@ -60,15 +60,27 @@ function ImpoundList() {
         title: "بطاقة الهوية الوطنية",
         type: "numeric",
         align: "right",
+        field: "cin",
+
       },
 
       { title: "الهاتف", field: "telephone", type: "numeric", align: "right" },
 
       { title: "رقم السياره", field: "matricule", align: "right" },
+      {
+        title: " معرّف مكان الحجز",
+        field: "idPlace",
+        align: "right",
+        editable: "onAdd",
+      },
+      {
+        title: " معرّف السائق",
+        field: "idDriver",
+        align: "right",
+        editable: "onAdd",
+      },
 
-      { title: " معرّف السائق", field: "idDriver", align: "right" },
-
-      { title: "المعرّف", field: "id", align: "right"  ,editable:"never"},
+      { title: "المعرّف", field: "id", align: "right", editable: "never" },
     ],
     data: [],
   });
@@ -105,6 +117,7 @@ function ImpoundList() {
     setAlertDelete(null);
     if (
       !newData.idDriver ||
+      !newData.idPlace ||
       !newData.matricule ||
       !newData.telephone ||
       !newData.cin ||
@@ -124,6 +137,7 @@ function ImpoundList() {
       );
     } else {
       let idDriver = newData.idDriver;
+      let idPlace = newData.idPlace;
       let matricule = newData.matricule;
       let telephone = newData.telephone;
       let cin = newData.cin;
@@ -136,6 +150,7 @@ function ImpoundList() {
       dispatch(
         impoundPostData({
           idDriver,
+          idPlace,
           matricule,
           telephone,
           cin,
@@ -186,6 +201,7 @@ function ImpoundList() {
     console.log(newData, oldData);
     if (
       !newData.idDriver ||
+      !newData.idPlace ||
       !newData.matricule ||
       !newData.telephone ||
       !newData.cin ||
@@ -206,6 +222,7 @@ function ImpoundList() {
     } else {
       let id = oldData.id;
       let idDriver = newData.idDriver;
+      let idPlace = newData.idPlace;
       let matricule = newData.matricule;
       let telephone = newData.telephone;
       let cin = newData.cin;
@@ -217,6 +234,7 @@ function ImpoundList() {
       dispatch(
         impoundUpdateData({
           id,
+          idPlace,
           idDriver,
           matricule,
           telephone,
