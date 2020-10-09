@@ -38,7 +38,12 @@ public class Impound {
 	private Date paidDate;
 	private Boolean paid = false;
 	private Boolean released = false;
+	//where gonna put cars
 	private String idPlace;
+	//from where cars taken
+	private String idPlaceTake;
+	private String idImageFront;
+	private String idImageBack;
 
 	public String getId() {
 		return id;
@@ -126,6 +131,30 @@ public class Impound {
 
 	public void setPaidDate(Date paidDate) {
 		this.paidDate = paidDate;
+	}
+
+	public String getIdPlaceTake() {
+		return idPlaceTake;
+	}
+
+	public void setIdPlaceTake(String idPlaceTake) {
+		this.idPlaceTake = idPlaceTake;
+	}
+
+	public String getIdImageFront() {
+		return idImageFront;
+	}
+
+	public void setIdImageFront(String idImageFront) {
+		this.idImageFront = idImageFront;
+	}
+
+	public String getIdImageBack() {
+		return idImageBack;
+	}
+
+	public void setIdImageBack(String idImageBack) {
+		this.idImageBack = idImageBack;
 	}
 
 }

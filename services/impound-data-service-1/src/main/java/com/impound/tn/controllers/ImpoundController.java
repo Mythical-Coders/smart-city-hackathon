@@ -86,7 +86,9 @@ public class ImpoundController {
 		oldImpound.setReleased(newImpound.getReleased());
 		oldImpound.setIdPlace(newImpound.getIdPlace());
 		oldImpound.setPaidDate(newImpound.getPaidDate());
-
+		oldImpound.setIdPlaceTake(newImpound.getIdPlaceTake());
+		oldImpound.setIdImageBack(newImpound.getIdImageBack());
+		oldImpound.setIdImageFront(newImpound.getIdImageFront());
 		return impoundRepo.save(oldImpound);
 	}
 	@ApiOperation("Release")
