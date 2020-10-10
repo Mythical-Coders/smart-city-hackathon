@@ -33,7 +33,7 @@ import com.authentification.springboot.payload.response.JwtResponse;
 import com.authentification.springboot.payload.response.MessageResponse;
 import com.authentification.springboot.repository.RoleRepository;
 import com.authentification.springboot.repository.UserRepository;
-import com.authentification.springboot.security.jwt.JwtUtils;
+import com.authentification.springboot.security.jwt.JwtUtils; 
 import com.authentification.springboot.security.services.UserDetailsImpl;
 
 //This is a comment 
