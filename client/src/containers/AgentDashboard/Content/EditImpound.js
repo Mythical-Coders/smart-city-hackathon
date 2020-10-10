@@ -252,11 +252,11 @@ function EditImpound(props) {
               <h2>: دفع الخطية المالية</h2>
               <h3>{data.paid ? "نعم" : "لا"}</h3>
               <h2>: تاريخ الدفع</h2>
-              <h3>{new Date(data.paidDate).toUTCString()}</h3>
+              <h3>{data.paidDate?new Date(data.paidDate).toUTCString():""}</h3>
               <h2>: إخراج السيارة</h2>
               <h3>{data.released ? "نعم" : "لا"}</h3>
               <h2>: تاريخ إخراج السيارة</h2>
-              <h3>{new Date(data.releaseDate).toUTCString()}</h3>
+              <h3>{data.releaseDate?new Date(data.releaseDate).toUTCString():""}</h3>
               <br /> <br />
             </div>
           ) : (

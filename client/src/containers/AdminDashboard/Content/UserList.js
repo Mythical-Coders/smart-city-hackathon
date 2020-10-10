@@ -33,14 +33,20 @@ function UserList() {
           ROLE_ADMIN: "Admin",
           ROLE_RECEPTIVE: "Receptive",
           ROLE_DRIVER: "Driver",
+          ROLE_CITIZEN: "Citizen",
         },
         align: "right",
       },
-      { title: "كلمه السر", field: "password", align: "right" ,editable:"onAdd"},
+      {
+        title: "كلمه السر",
+        field: "password",
+        align: "right",
+        editable: "onAdd",
+      },
 
       { title: "البريد الإلكتروني", field: "email", align: "right" },
       { title: "اسم المستخدم", field: "username", align: "right" },
-      { title: "المعرّف", field: "id", align: "right", editable:"never" },
+      { title: "المعرّف", field: "id", align: "right", editable: "never" },
     ],
     data: [],
   });
@@ -103,8 +109,11 @@ function UserList() {
         case "ROLE_RECEPTIVE":
           roles = ["receptive"];
           break;
-        default:
+        case "ROLE_DRIVER":
           roles = ["driver"];
+          break;
+        default:
+          roles = ["citizen"];
           break;
       }
       dispatch(signUp({ username, email, password, roles }))
@@ -214,7 +223,7 @@ function UserList() {
               <SnackbarContent
                 message={
                   <span>
-                    <b> تنبيه النجاح: </b> تمت تحديث المستخدم ... 
+                    <b> تنبيه النجاح: </b> تمت تحديث المستخدم ...
                   </span>
                 }
                 close

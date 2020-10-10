@@ -58,7 +58,6 @@ function ImpoundList() {
 
       {
         title: "بطاقة الهوية الوطنية",
-        type: "numeric",
         align: "right",
         field: "cin",
 

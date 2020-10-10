@@ -91,9 +91,9 @@ public class AuthController {
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles == null) {
-			Role candidatRole = roleRepository.findByName(ERole.ROLE_DRIVER)
+			Role citizenRole = roleRepository.findByName(ERole.ROLE_CITIZEN)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(candidatRole);
+			roles.add(citizenRole);
 		} else {
 			strRoles.forEach(role -> {
 				switch (role) {
@@ -109,10 +109,16 @@ public class AuthController {
 					roles.add(instructorRole);
 
 					break;
-				default:
-					Role candidatRole = roleRepository.findByName(ERole.ROLE_DRIVER)
+				case "driver":
+					Role driverRole = roleRepository.findByName(ERole.ROLE_DRIVER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(candidatRole);
+					roles.add(driverRole);
+
+					break;
+				default:
+					Role citizenRole = roleRepository.findByName(ERole.ROLE_CITIZEN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(citizenRole);
 				}
 			});
 		}
@@ -150,9 +156,9 @@ public class AuthController {
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles == null) {
-			Role candidatRole = roleRepository.findByName(ERole.ROLE_DRIVER)
+			Role citizenRole = roleRepository.findByName(ERole.ROLE_CITIZEN)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(candidatRole);
+			roles.add(citizenRole);
 		} else {
 			strRoles.forEach(role -> {
 				switch (role) {
@@ -168,10 +174,16 @@ public class AuthController {
 					roles.add(instructorRole);
 
 					break;
-				default:
-					Role candidatRole = roleRepository.findByName(ERole.ROLE_DRIVER)
+				case "driver":
+					Role driverRole = roleRepository.findByName(ERole.ROLE_DRIVER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					roles.add(candidatRole);
+					roles.add(driverRole);
+
+					break;
+				default:
+					Role citizenRole = roleRepository.findByName(ERole.ROLE_CITIZEN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(citizenRole);
 				}
 			});
 		}
