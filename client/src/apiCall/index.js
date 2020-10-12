@@ -49,4 +49,31 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
       ...composeToken(token),
     },
   });
-export { apiCallAuth, apiCallImpound, apiCallPlace, apiCallCitizen, apiCallProfile };
+  const apiCallReport = (url, method, body = {}, token = "") =>
+  axios({
+    method,
+    url: `http://localhost:8087/api/report${url}`,
+    data: body,
+    headers: {
+      ...composeToken(token),
+    },
+  });
+  const apiCallReportPlace = (url, method, body = {}, token = "") =>
+  axios({
+    method,
+    url: `http://localhost:8088/api/reportPlace${url}`,
+    data: body,
+    headers: {
+      ...composeToken(token),
+    },
+  });
+  const apiCallImage = (url, method, body = {}, token = "") =>
+  axios({
+    method,
+    url: `http://localhost:8085/api/photos${url}`,
+    data: body,
+    headers: {
+      ...composeToken(token),
+    },
+  });
+export { apiCallImage,apiCallAuth, apiCallImpound, apiCallPlace, apiCallCitizen, apiCallProfile ,apiCallReport ,apiCallReportPlace};

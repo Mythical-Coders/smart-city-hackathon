@@ -100,7 +100,7 @@ function ImpoundList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );
@@ -130,7 +130,7 @@ function ImpoundList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -169,7 +169,7 @@ function ImpoundList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -197,7 +197,7 @@ function ImpoundList() {
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
-    console.log(newData, oldData);
+
     if (
       !newData.idDriver ||
       !newData.idPlace ||
@@ -214,7 +214,7 @@ function ImpoundList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -254,7 +254,7 @@ function ImpoundList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -307,7 +307,7 @@ function ImpoundList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );

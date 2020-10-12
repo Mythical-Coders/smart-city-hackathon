@@ -71,7 +71,7 @@ function PlaceList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );
@@ -85,7 +85,7 @@ function PlaceList() {
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
-    console.log(newData, oldData);
+
     if (
       !newData.ville ||
       !newData.postCode ||
@@ -102,7 +102,7 @@ function PlaceList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -134,7 +134,7 @@ function PlaceList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -185,7 +185,7 @@ function PlaceList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );

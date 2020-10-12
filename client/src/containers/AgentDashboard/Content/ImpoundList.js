@@ -108,7 +108,7 @@ function ImpoundList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );

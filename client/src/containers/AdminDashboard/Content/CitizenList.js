@@ -56,7 +56,7 @@ function CitizenList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );
@@ -79,7 +79,7 @@ function CitizenList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -104,7 +104,7 @@ function CitizenList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -131,7 +131,7 @@ function CitizenList() {
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
-    console.log(newData, oldData);
+
     if (!newData.matricule || !newData.telephone|| !newData.cin) {
       setAlertUpdate(
         <SnackbarContent
@@ -141,7 +141,7 @@ function CitizenList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -168,7 +168,7 @@ function CitizenList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -220,7 +220,7 @@ function CitizenList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );
