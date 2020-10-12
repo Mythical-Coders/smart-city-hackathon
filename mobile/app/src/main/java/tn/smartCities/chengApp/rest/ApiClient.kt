@@ -1,5 +1,6 @@
 package tn.smartCities.chengApp.rest
 
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -7,6 +8,7 @@ import tn.smartCities.chengApp.model.Citizen
 import tn.smartCities.chengApp.model.Impound
 import tn.smartCities.chengApp.model.User
 import tn.smartCities.chengApp.model.UserCredentials
+import retrofit2.http.Multipart
 
 interface ApiClient {
     @Headers("Content-Type: application/json")
@@ -19,4 +21,8 @@ interface ApiClient {
     @Headers("Content-Type: application/json")
     @POST("/api/impound/")
     fun addImpound(@Body impound: Impound):Call<Impound>
+
+    @Multipart
+    @POST("/api/photos/add")
+    fun uploadPhoto(@Part("imageName") imageName:String, @Part("imageFile") file: MultipartBody.Part): Call<String>
 }
