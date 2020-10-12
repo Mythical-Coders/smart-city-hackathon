@@ -12,3 +12,7 @@ https://cheng-app-place-data.herokuapp.com/    ~ Place data service
 https://cheng-app-profile-data.herokuapp.com/    ~ Profile data service
 
 https://cheng-app-upload-photo.herokuapp.com/    ~ Upload photo service
+
+https://cheng-app-report-data.herokuapp.com/    ~ Report data service
+
+https://cheng-app-report-place.herokuapp.com/    ~ Report place service
