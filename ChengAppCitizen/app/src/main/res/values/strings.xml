@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">ChengAppCitizen</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="logout">Log Out</string>
+    <string name="signup">إنشاء حساب</string>
+    <string name="userName">اسم المستخدم</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة السر</string>
+    <string name="logo_desc">this is the app logo (Towing truck)</string>
+    <string name="exit">خروج</string>
+    <string name="password_hint">أدخل كلمة السر</string>
+    <string name="login_hint">أدخل اسم المستخدم</string>
+    <string name="show_hide_button">show/hide button</string>
+    <string name="welcome_text">مرحبا بك %s</string>
+    <string name="signUp">إنشاء حساب</string>
+    <string name="email_hint">أدخل البريد الإلكتروني</string>
+    <string name="repeat_password_hint">إعادة إدخال كلمة السر</string>
+    <string name="cin_hint">أدخل رقم بطاقة التعريف الوطنية</string>
+    <string name="phone_hint">أدخل رقم الهاتف الجوال</string>
+    <string name="matricule_hint"> أدخل رقم لوحة السيارة (999TN9999)</string>
+    <string name="terms">أقبل بأحكام و شروط التطبيق </string>
+    <string name="registerText">ليس لديك حساب ? إنشئ حسابك الأن  </string>
+    <string name="btnReport">تبليغ على مخالفة</string>
+    <string name="listReports">لائحة البلاغات السابقة </string>
+    <string name="formText">إبلاغ على مخالفة</string>
+    <string name="typeText">نوعية المخالفة</string>
+    <string name="accident">حادت</string>
+    <string name="parking">توقف مخالف للقانون</string>
+    <string name="other">نوع أخر</string>
+    <string name="photo">خذ صورة</string>
+    <string name="description">حاول تفسير نوعية المخالفة</string>
+    <string name="desription_hint">حاول تفسير نوعية المخالفة</string>
+    <string name="sendReport">إرسال البلاغ</string>
+    <string name="profile">تحديث الحساب</string>
+
+
+</resources>
