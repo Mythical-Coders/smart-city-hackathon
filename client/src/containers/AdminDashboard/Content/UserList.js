@@ -67,7 +67,7 @@ function UserList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );
@@ -93,7 +93,7 @@ function UserList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -127,7 +127,7 @@ function UserList() {
                   </span>
                 }
                 close
-                color="warning"
+                color="danger"
                 icon={Warning}
               />
             );
@@ -156,7 +156,7 @@ function UserList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -180,7 +180,7 @@ function UserList() {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -197,8 +197,11 @@ function UserList() {
         case "ROLE_RECEPTIVE":
           roles = ["receptive"];
           break;
-        default:
+        case "ROLE_DRIVER":
           roles = ["driver"];
+          break;
+        default:
+          roles = ["citizen"];
           break;
       }
       dispatch(updateUser({ id, username, email, password, roles }))
@@ -212,7 +215,7 @@ function UserList() {
                   </span>
                 }
                 close
-                color="warning"
+                color="danger"
                 icon={Warning}
               />
             );
@@ -242,7 +245,7 @@ function UserList() {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );
@@ -276,7 +279,7 @@ function UserList() {
               </span>
             }
             close
-            color="warning"
+            color="danger"
             icon={Warning}
           />
         );

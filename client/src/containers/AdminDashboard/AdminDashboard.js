@@ -12,6 +12,9 @@ import ImpoundList from "./Content/ImpoundList";
 import PlaceList from "./Content/PlaceList";
 import CitizenList from "./Content/CitizenList";
 import ProfileList from "./Content/ProfileList";
+import ReportList from "./Content/ReportList";
+import ReportPlaceList from "./Content/ReportPlaceList";
+import ImageList from "./Content/ImageList";
 
 
 const drawerWidth = 256;
@@ -50,6 +53,9 @@ function AdminDashboard(props) {
               <Route path={"/admin_dashboard/places"} exact component={PlaceList} />
               <Route path={"/admin_dashboard/citizens"} exact component={CitizenList} />
               <Route path={"/admin_dashboard/profiles"} exact component={ProfileList} />
+              <Route path={"/admin_dashboard/reports"} exact component={ReportList} />
+              <Route path={"/admin_dashboard/reportPlaces"} exact component={ReportPlaceList} />
+              <Route path={"/admin_dashboard/images"} exact component={ImageList} />
 
               <Redirect to={"/admin_dashboard/users"} />
             </Switch>

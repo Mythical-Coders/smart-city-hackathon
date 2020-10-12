@@ -18,7 +18,11 @@ import SettingsEthernetIcon from "@material-ui/icons/SettingsEthernet";
 // import SettingsInputComponentIcon from "@material-ui/icons/SettingsInputComponent";
 import TimerIcon from "@material-ui/icons/Timer";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ReportIcon from '@material-ui/icons/Report';
+import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import PhonelinkSetupIcon from "@material-ui/icons/PhonelinkSetup";
+import Image from "@material-ui/icons/Image";
+
 import { stylesNavigator } from "./styles/Styles";
 
 const defaultCategories = [
@@ -49,6 +53,21 @@ const defaultCategories = [
         id: "ملفات تعريف المستخدمين",
         icon: <AccountBoxIcon />,
         link: "/admin_dashboard/profiles",
+      },
+      {
+        id: "التقرير",
+        icon: <ReportIcon />,
+        link: "/admin_dashboard/reports",
+      },
+      {
+        id: "مكان التقرير",
+        icon: <ReportProblemIcon />,
+        link: "/admin_dashboard/reportPlaces",
+      },
+      {
+        id: "الصور",
+        icon: <Image />,
+        link: "/admin_dashboard/images",
       },
     ],
   },

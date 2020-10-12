@@ -136,7 +136,7 @@ function EditImpound(props) {
             </span>
           }
           close
-          color="warning"
+          color="danger"
           icon={Warning}
         />
       );
@@ -157,7 +157,7 @@ function EditImpound(props) {
                 </span>
               }
               close
-              color="warning"
+              color="danger"
               icon={Warning}
             />
           );

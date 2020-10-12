@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  profileDeleteData,
-  profileGetAll,
-  profilePostData,
-  profileUpdateData,
-} from "../../../actions/ProfileActions";
+  reportPlaceDeleteData,
+  reportPlaceGetAll,
+  reportPlacePostData,
+  reportPlaceUpdateData,
+} from "../../../actions/ReportPlaceActions";
 import MaterialTable from "material-table";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
@@ -19,32 +19,30 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import SnackbarContent from "../../../components/Snackbar/SnackbarContent.js";
 import localization from "../../tableFeatures/localization";
 
-function ProfileList() {
+function ReportPlaceList() {
   const dispatch = useDispatch();
-  const profileData = useSelector((state) => state.profile);
+  const reportPlaceData = useSelector((state) => state.reportPlace);
   const [alert, setAlert] = useState(null);
   const [alertAdd, setAlertAdd] = useState(null);
   const [alertUpdate, setAlertUpdate] = useState(null);
   const [alertDelete, setAlertDelete] = useState(null);
   const [state, setState] = useState({
     columns: [
-      { title: "المنطقة", field: "region", align: "right" },
+      { title: "خط العرض", field: "latitude", align: "right" , type:"numeric"},
+      { title: "خط الطول", field: "longitude", align: "right" ,type:"numeric" },
+      { title: "العنوان", field: "adress", align: "right" },
+
       {
-        title: "بطاقة الهوية الوطنية",
-        field: "cin",
+        title: "نوع",
+        field: "type",
         align: "right",
       },
-      { title: "الهاتف", field: "telephone", type: "numeric", align: "right" },
-      { title: "اللقب", field: "lastName", align: "right" },
-      { title: "الإسم", field: "firstName", align: "right" },
-      { title: "معرف المستخدم", field: "userID", align: "right" },
-
-      { title: "المعرّف", field: "id", align: "right" ,editable:"never"},
+      { title: "المعرّف", field: "id", align: "right"  ,editable:"never"},
     ],
     data: [],
   });
   const getData = () => {
-    dispatch(profileGetAll()).then((res) => {
+    dispatch(reportPlaceGetAll()).then((res) => {
       if (res) {
         setState({
           columns: state.columns,
@@ -69,19 +67,12 @@ function ProfileList() {
   useEffect(() => {
     getData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const addProfile = (newData) => {
+  const addReportPlace = (newData) => {
     setAlert(null);
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
-    if (
-      !newData.telephone ||
-      !newData.cin ||
-      !newData.userID ||
-      !newData.firstName ||
-      !newData.lastName ||
-      !newData.region
-    ) {
+    if (!newData.adress ||!newData.type || !newData.longitude || !newData.latitude) {
       setAlertAdd(
         <SnackbarContent
           message={
@@ -95,21 +86,16 @@ function ProfileList() {
         />
       );
     } else {
-      let telephone = newData.telephone;
-      let cin = newData.cin;
-      let userID = newData.userID;
-      let firstName = newData.firstName;
-      let lastName = newData.lastName;
-      let region = newData.region;
+      let adress = newData.adress;
+      let type = newData.type;
+      let longitude = newData.longitude;
+      let latitude = newData.latitude;
 
       dispatch(
-        profilePostData({
-          telephone,
-          cin,
-          userID,
-          firstName,
-          lastName,
-          region,
+        reportPlacePostData({
+          adress,
+          type,
+          longitude,latitude
         })
       ).then((res) => {
         if (!res)
@@ -127,12 +113,11 @@ function ProfileList() {
           );
         else {
           getData();
-
           setAlertAdd(
             <SnackbarContent
               message={
                 <span>
-                  <b> تنبيه النجاح: </b> تمت إضافة الحجز ...{" "}
+                  <b> تنبيه النجاح: </b> تمت إضافة مكان التقرير ...{" "}
                 </span>
               }
               close
@@ -144,18 +129,13 @@ function ProfileList() {
       });
     }
   };
-  const updateProfile = (newData, oldData) => {
+  const updateReportPlace = (newData, oldData) => {
     setAlert(null);
     setAlertAdd(null);
     setAlertUpdate(null);
     setAlertDelete(null);
 
-    if (!newData.telephone ||
-      !newData.cin ||
-      !newData.userID ||
-      !newData.firstName ||
-      !newData.lastName ||
-      !newData.region) {
+    if (!newData.adress ||!newData.type || !newData.longitude || !newData.latitude) {
       setAlertUpdate(
         <SnackbarContent
           message={
@@ -170,21 +150,17 @@ function ProfileList() {
       );
     } else {
       let id = oldData.id;
-      let telephone = newData.telephone;
-      let cin = newData.cin;
-      let userID = newData.userID;
-      let firstName = newData.firstName;
-      let lastName = newData.lastName;
-      let region = newData.region;
+      let adress = newData.adress;
+      let type = newData.type;
+      let longitude = newData.longitude;
+      let latitude = newData.latitude;
+
       dispatch(
-        profileUpdateData({
+        reportPlaceUpdateData({
           id,
-          telephone,
-          cin,
-          userID,
-          firstName,
-          lastName,
-          region,
+          adress,
+          type,
+          longitude,latitude
         })
       ).then((res) => {
         if (!res)
@@ -202,12 +178,11 @@ function ProfileList() {
           );
         else {
           getData();
-
           setAlertUpdate(
             <SnackbarContent
               message={
                 <span>
-                  <b> تنبيه النجاح: </b> تم تحديث الحجز ...{" "}
+                  <b> تنبيه النجاح: </b> تم تحديث مكان التقرير ...{" "}
                 </span>
               }
               close
@@ -219,8 +194,8 @@ function ProfileList() {
       });
     }
   };
-  const deleteProfile = (oldData) => {
-    dispatch(profileDeleteData(oldData.id)).then((res) => {
+  const deleteReportPlace = (oldData) => {
+    dispatch(reportPlaceDeleteData(oldData.id)).then((res) => {
       setAlert(null);
       setAlertAdd(null);
       setAlertUpdate(null);
@@ -232,7 +207,7 @@ function ProfileList() {
           <SnackbarContent
             message={
               <span>
-                <b> تنبيه النجاح: </b> حذف الحجز ...{" "}
+                <b> تنبيه النجاح: </b> تم حذف مكان التقرير ...{" "}
               </span>
             }
             close
@@ -255,7 +230,7 @@ function ProfileList() {
         );
     });
   };
-  if (profileData.loading) return <CircularProgress />;
+  if (reportPlaceData.loading) return <CircularProgress />;
   else
     return (
       <>
@@ -264,26 +239,26 @@ function ProfileList() {
         {alertUpdate}
         {alertDelete}
         <MaterialTable
-          title="ملفات تعريف المستخدمين"
+          title="قائمة أماكن التقرير"
           columns={state.columns}
-          localization={localization()}
           icons={tableIcons}
           data={state.data}
+          localization={localization()}
           editable={{
             onRowAdd: (newData) =>
               new Promise((resolve) => {
                 resolve();
-                addProfile(newData);
+                addReportPlace(newData);
               }),
             onRowUpdate: (newData, oldData) =>
               new Promise((resolve) => {
                 resolve();
-                updateProfile(newData, oldData);
+                updateReportPlace(newData, oldData);
               }),
             onRowDelete: (oldData) =>
               new Promise((resolve) => {
                 resolve();
-                deleteProfile(oldData);
+                deleteReportPlace(oldData);
               }),
           }}
         />
@@ -291,8 +266,8 @@ function ProfileList() {
     );
 }
 
-ProfileList.propTypes = {
+ReportPlaceList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(stylesContent)(ProfileList);
+export default withStyles(stylesContent)(ReportPlaceList);
