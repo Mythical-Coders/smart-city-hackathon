@@ -1,6 +1,7 @@
 package tn.smartCities.chengApp.rest
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -24,5 +25,6 @@ interface ApiClient {
 
     @Multipart
     @POST("/api/photos/add")
-    fun uploadPhoto(@Part("imageName") imageName:String, @Part("imageFile") file: MultipartBody.Part): Call<String>
+    fun uploadPhoto(@Part("imageName") image: RequestBody, @Part file: MultipartBody.Part): Call<String>
+
 }
