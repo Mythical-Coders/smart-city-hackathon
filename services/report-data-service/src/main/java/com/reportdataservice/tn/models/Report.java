@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class Report {
 	@Id
 	private String id;
-
+	@NotBlank
+	private String idUser;
 	@NotBlank
 	private String type;
 	@NotBlank
@@ -55,6 +56,14 @@ public class Report {
 
 	public void setIdPlace(String idPlace) {
 		this.idPlace = idPlace;
+	}
+
+	public String getIdUser() {
+		return idUser;
+	}
+
+	public void setIdUser(String idUser) {
+		this.idUser = idUser;
 	}
 
 }

@@ -40,7 +40,15 @@ public class ReportController {
 	public List<Report> GetReports() {
 		return reportRepo.findAll();
 	}
-
+	@ApiOperation("Get by idUser")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully get Report idUser"),
+			@ApiResponse(code = 401, message = "The request has not been applied because it lacks valid authentication credentials for the target resource"),
+			@ApiResponse(code = 403, message = "The server understood the request but refuses to authorize it"),
+			@ApiResponse(code = 404, message = "The resource  not found") })
+	@GetMapping("/idUser/{idUser}")
+	public List<Report> GetReportsByIdUser(@PathVariable String idUser) {
+		return reportRepo.findByIdUser(idUser);
+	}
 	@ApiOperation("Get Report")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully get Report by ID"),
 			@ApiResponse(code = 401, message = "The request has not been applied because it lacks valid authentication credentials for the target resource"),
@@ -72,6 +80,7 @@ public class ReportController {
 		Report oldReport = reportRepo.findById(newReport.getId()).orElse(null);
 		oldReport.setIdImage(newReport.getIdImage());
 		oldReport.setIdPlace(newReport.getIdPlace());
+		oldReport.setIdUser(newReport.getIdUser());
 
 		return reportRepo.save(oldReport);
 	}
