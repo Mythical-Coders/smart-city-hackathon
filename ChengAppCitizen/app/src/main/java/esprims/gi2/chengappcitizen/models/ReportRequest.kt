@@ -3,6 +3,10 @@ package esprims.gi2.chengappcitizen.models
 import com.google.gson.annotations.SerializedName
 
 data class ReportRequest (
+
+    @SerializedName("idUser")
+    val idUser:String,
+
     @SerializedName("type")
     val type:String,
 
@@ -11,4 +15,7 @@ data class ReportRequest (
 
     @SerializedName("idPlace")
     val idPlace:String
+
+
+
 )

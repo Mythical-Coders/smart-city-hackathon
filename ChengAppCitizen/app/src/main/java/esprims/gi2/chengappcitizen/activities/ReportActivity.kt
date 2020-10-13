@@ -29,6 +29,7 @@ import android.location.Location
 import android.location.LocationListener
 import esprims.gi2.chengappcitizen.adapters.Mapadapter
 import esprims.gi2.chengappcitizen.models.*
+import esprims.gi2.chengappcitizen.preference.AppPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -39,18 +40,18 @@ import java.util.*
 class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     //variables for database
-    val convert:DbBitmapUtility = DbBitmapUtility()
-    val photoManager:PhotoManager = PhotoManager(this)
+    private val convert:DbBitmapUtility = DbBitmapUtility()
+    private val photoManager:PhotoManager = PhotoManager(this)
 
     //init locationManager
     private var locationManager : LocationManager? = null
 
-    //Location string used to store the lattitude and logitude from the lcoation listener
+    //Location string used to store the latitude and longitude from the location listener
     var lat: String = ""
     var long: String = ""
 
-    //variable to store the id of @post locatio
-    var idLocation:String =""
+    //variable to store the id of @post location
+    var idLocation:String ="0000"
 
     //variable to the type of the report
     var type=""
@@ -129,10 +130,10 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
                 val idPLace: String = addPlace()
                 val idImage: String = addPhoto()
-
+                val idUser:String = AppPreference.id
                 launch(Dispatchers.Main) {
                     try {
-                        val reportRequest = ReportRequest(type, idPLace, idImage)
+                        val reportRequest = ReportRequest(idUser,type,idImage,idPLace)
                         addReport(reportRequest) {
                             if (it != null) {
                                 Toast.makeText(
@@ -177,7 +178,20 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
                     //store image in database
                     val imageByte:ByteArray =convert.getbytes(imageBitMap)
-                    val photo = Photo("ghi",imageByte) //add typeReportLater
+                    //add title to db as the type of the report
+                    when {
+                        radioParking.isChecked -> {
+                            type = "illegal Parking"
+                        }
+                        radioaccident.isChecked -> {
+                            type = "accident"
+                        }
+                        radioOther.isChecked -> {
+
+                            type = descriptionId.text.toString()
+                        }
+                    }
+                    val photo = Photo(type,imageByte) //add typeReportLater
                     photoManager.openWriteDB()
                     photoManager.addPhoto(photo)
                     photoManager.closeDB()
@@ -285,13 +299,13 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             val address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
 
             //variables for @POST
-            val type = "report"
+            val typeLocation = "report"
             val adr = address.toString()
 
             launch(Dispatchers.Main) {
                 try {
 
-                    val mapRequest = MapRequest(type,long.toDouble(),lat.toDouble(),adr)
+                    val mapRequest = MapRequest(typeLocation,long.toDouble(),lat.toDouble(),adr)
                     addPlaceService(mapRequest){
                         if(it!=null){
                             idLocation = it.id
@@ -307,18 +321,16 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
 
         }
-        else{
-            return ""
-        }
+
         return idLocation
 
     }
-    fun addPhoto():String{
+    private fun addPhoto():String{
 
         //implement addPhotoservice
         //travail next commit
 
-        return "id" //return id from @POST
+        return "to be added later" //return id from @POST
     }
 
 }
