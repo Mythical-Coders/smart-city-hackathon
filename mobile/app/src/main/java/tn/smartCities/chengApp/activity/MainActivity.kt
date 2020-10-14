@@ -9,9 +9,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -21,6 +23,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -33,16 +36,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import tn.smartCities.chengApp.adapter.CitizenApiAdapter
 import tn.smartCities.chengApp.adapter.ImpoundApiAdapter
+import tn.smartCities.chengApp.adapter.UploadFileAdapter
 import tn.smartCities.chengApp.model.Citizen
 import tn.smartCities.chengApp.model.Impound
 import tn.smartCities.chengApp.preference.AppPreferences
 import tn.smartCities.chengApp.rest.ApiClient
 import tn.smartCities.chengApp.util.PrefUtil
+import java.io.*
 import java.time.LocalDateTime
 
 
@@ -57,6 +68,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     var location: String = ""
     //Message to be sent to someone to notify him along with location
     var msg = "لديك خمسة دقائق لتغير مكان سيارتك أو سيقع شنقلتها، "
+
+    var bitmap: Bitmap? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,8 +176,22 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 101){
-            if(resultCode == -1)
+            if(resultCode == Activity.RESULT_OK && data != null){
                 done_icon.visibility = View.VISIBLE
+                val image1Part = buildImageBodyPart("car", data.extras?.get("data") as Bitmap)
+                val imageName = createPartFromString("car")
+                try{
+                    uploadPhoto(imageName, image1Part){
+                        Toast.makeText(applicationContext,
+                            it,
+                            Toast.LENGTH_LONG).show()
+                    }
+                }catch(e: Exception){
+                    Toast.makeText(applicationContext,
+                        "Error Occurred: ${e.message}",
+                        Toast.LENGTH_LONG).show()
+                }
+            }
             else
                 error_icon.visibility = View.VISIBLE
         }
@@ -291,5 +318,60 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
             }
         )
     }
+
+    private fun uploadPhoto(imageName: RequestBody, file: MultipartBody.Part, onResult: (String) -> Unit){
+        val retrofit = UploadFileAdapter.buildService(ApiClient::class.java)
+        retrofit.uploadPhoto(imageName, file).enqueue(
+            object: Callback<String> {
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    onResult(null.toString())
+                }
+
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    response.body()?.let { onResult(it) }
+                }
+
+            }
+        )
+    }
+
+    private fun buildImageBodyPart(fileName: String, bitmap: Bitmap):  MultipartBody.Part {
+        val leftImageFile = convertBitmapToFile(fileName, bitmap)
+        val reqFile = leftImageFile.asRequestBody("image/*".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData(fileName,leftImageFile.name, reqFile)
+    }
+
+    private fun convertBitmapToFile(fileName: String, bitmap: Bitmap): File {
+        //create a file to write bitmap data
+        val file = File(applicationContext.cacheDir, fileName)
+        file.createNewFile()
+
+        //Convert bitmap to byte array
+        val bos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos)
+        val bitMapData = bos.toByteArray()
+
+        //write the bytes in file
+        var fos: FileOutputStream? = null
+        try {
+            fos = FileOutputStream(file)
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        }
+        try {
+            fos?.write(bitMapData)
+            fos?.flush()
+            fos?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return file
+    }
+
+    private fun createPartFromString(descriptionString: String): RequestBody {
+        return RequestBody.create(
+            okhttp3.MultipartBody.FORM, descriptionString)
+    }
+
 }
 

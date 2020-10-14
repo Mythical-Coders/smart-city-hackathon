@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ReportAdapter {
     private val client = OkHttpClient.Builder().build()
     private val retrofit = Retrofit.Builder()
-        .baseUrl("") //to add in the next commit
+        .baseUrl("https://cheng-app-report-data.herokuapp.com/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
