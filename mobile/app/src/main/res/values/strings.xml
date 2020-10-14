@@ -17,6 +17,7 @@
     <string name="timer_start">5:00</string>
     <string name="notify_btn_text">إعلام</string>
     <string name="stop_btn_text">Stop</string>
-    <string name="take_photo_text">خذ صورة</string>
+    <string name="take_front_photo">صورة أمامية</string>
+    <string name="take_back_photo">صورة خلفية</string>
     <string name="send_btn_text">تسجيل مخالفة</string>
 </resources>

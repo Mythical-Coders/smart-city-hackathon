@@ -23,12 +23,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.smartCities.chengApp.R
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_timer.*
 import kotlinx.android.synthetic.main.custom_action_bar.*
@@ -36,36 +36,28 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import tn.smartCities.chengApp.adapter.CitizenApiAdapter
 import tn.smartCities.chengApp.adapter.ImpoundApiAdapter
-import tn.smartCities.chengApp.adapter.UploadFileAdapter
 import tn.smartCities.chengApp.model.Citizen
 import tn.smartCities.chengApp.model.Impound
 import tn.smartCities.chengApp.preference.AppPreferences
 import tn.smartCities.chengApp.rest.ApiClient
 import tn.smartCities.chengApp.util.PrefUtil
-import java.io.*
 import java.time.LocalDateTime
 
+class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
-class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
-
-    private lateinit var timer : CountDownTimer
+    private lateinit var timer: CountDownTimer
     private var timerLengthSeconds: Long = 300L
     private var secondsRemaining: Long = 300L
-    private var locationManager : LocationManager? = null
+    private var locationManager: LocationManager? = null
 
     //Location string used to store the lattitude and logitude from the lcoation listener
     var location: String = ""
+
     //Message to be sent to someone to notify him along with location
     var msg = "لديك خمسة دقائق لتغير مكان سيارتك أو سيقع شنقلتها، "
 
@@ -96,33 +88,51 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         val date = LocalDateTime.now()
 
         //Permission check for Location
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 222)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                222
+            )
         }
         //Link the location manager with location listener to get location as soon as it changed
-        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+        locationManager?.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER,
+            0L,
+            0f,
+            locationListener
+        )
         //Default status for the done and error icon next to take photo button
-        done_icon.visibility = View.INVISIBLE
-        error_icon.visibility = View.INVISIBLE
+        done_icon_front.visibility = View.INVISIBLE
+        error_icon_front.visibility = View.INVISIBLE
+        done_icon_back.visibility = View.INVISIBLE
+        error_icon_back.visibility = View.INVISIBLE
 
         //When clicking on notify it appends the location to the msg and call the API to extract the citizen info and send sms
         notify_btn.setOnClickListener {
             msg += location
-            launch(Dispatchers.Main){
-                try{
+            launch(Dispatchers.Main) {
+                try {
                     val response = CitizenApiAdapter.apiClient.getCitizenByMatricule(licensePlate.text.toString())
-                        if (response.isSuccessful && response.body() != null) {
-                            citizen = response.body()!!
-                            sendSms(citizen.telephone.toString(),msg)
-                        }
-                }catch (e: Exception){
-                    Toast.makeText(applicationContext,
+                    citizen = response.body()!!
+                    println(citizen)
+                    sendSms(response.body()?.telephone.toString(), msg)
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        applicationContext,
                         "Error Occurred: ${e.message}",
-                        Toast.LENGTH_LONG).show()
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -137,36 +147,72 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         }
 
         //This is the default status for take photo button, it will be enabled when you allow camera
-        take_photo_btn.isEnabled = false
-        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) !=PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 111)
-        }
-        else
-            take_photo_btn.isEnabled = true
+        take_front_photo.isEnabled = false
+        take_back_photo.isEnabled = false
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.CAMERA),
+                111
+            )
+        } else
+            take_front_photo.isEnabled = true
+            take_back_photo.isEnabled = true
 
-        take_photo_btn.setOnClickListener {
+        take_front_photo.setOnClickListener {
             val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(i, 101)
         }
 
+        take_back_photo.setOnClickListener {
+            val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(i, 102)
+        }
+
         send_btn.setOnClickListener {
-            val impound = Impound(0,"",AppPreferences.id,"Place 1",date.toString()+"Z",licensePlate.text.toString(),false,date.toString()+"Z",date.toString()+"Z",false,425757)
-            launch(Dispatchers.Main){
-                try{
+            val impound = Impound(
+                0,
+                "",
+                AppPreferences.id,
+                "Place 1",
+                date.toString() + "Z",
+                licensePlate.text.toString(),
+                false,
+                "",
+                "",
+                false,
+                citizen.telephone
+            )
+            launch(Dispatchers.Main) {
+                try {
                     progressDialog.show()
-                    addImpound(impound){
+                    addImpound(impound) {
                         if (it == 200) {
-                            Toast.makeText(applicationContext, "تم تسجيل المخالفة",Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                applicationContext,
+                                "تم تسجيل المخالفة",
+                                Toast.LENGTH_LONG
+                            ).show()
                             progressDialog.dismiss()
                         } else {
 
-                            Toast.makeText(applicationContext, "الرجاء التثبت من المعطيات",Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                applicationContext,
+                                "الرجاء التثبت من المعطيات",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
-                }catch(e: Exception){
-                    Toast.makeText(applicationContext,
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        applicationContext,
                         "Error Occurred: ${e.message}",
-                        Toast.LENGTH_LONG).show()
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -175,25 +221,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     //When the camera intent is done, we change the visibility of either the done or error icon
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 101){
-            if(resultCode == Activity.RESULT_OK && data != null){
-                done_icon.visibility = View.VISIBLE
-                val image1Part = buildImageBodyPart("car", data.extras?.get("data") as Bitmap)
-                val imageName = createPartFromString("car")
-                try{
-                    uploadPhoto(imageName, image1Part){
-                        Toast.makeText(applicationContext,
-                            it,
-                            Toast.LENGTH_LONG).show()
-                    }
-                }catch(e: Exception){
-                    Toast.makeText(applicationContext,
-                        "Error Occurred: ${e.message}",
-                        Toast.LENGTH_LONG).show()
-                }
+        var uri: Uri? = null
+        if (requestCode == 101) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                done_icon_front.visibility = View.VISIBLE
+            } else{
+                error_icon_front.visibility = View.VISIBLE
             }
-            else
-                error_icon.visibility = View.VISIBLE
+        }
+        if (requestCode == 102) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                done_icon_back.visibility = View.VISIBLE
+            } else{
+                error_icon_back.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -204,13 +245,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            take_photo_btn.isEnabled = true
+        if (requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            take_front_photo.isEnabled = true
+            take_back_photo.isEnabled = true
+
     }
 
     //Start timer function
-    private fun startTimer(){
-        timer = object : CountDownTimer(secondsRemaining * 1000,1000){
+    private fun startTimer() {
+        timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
             override fun onFinish() {
                 onTimerFinished()
             }
@@ -224,7 +267,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     }
 
     //When the timer finish
-    private fun onTimerFinished(){
+    private fun onTimerFinished() {
         progress_countdown.progress = 0
         PrefUtil.setSecondsRemaining(timerLengthSeconds, this)
         secondsRemaining = timerLengthSeconds
@@ -235,12 +278,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     }
 
     //Update the count down UI
-    private fun updateCountdownUI(){
+    private fun updateCountdownUI() {
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
         val secondsStr = secondsInMinuteUntilFinished.toString()
-        timer_id.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
-        progress_countdown.progress = ((timerLengthSeconds - secondsRemaining)/3).toInt()
+        timer_id.text =
+            "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
+        progress_countdown.progress = ((timerLengthSeconds - secondsRemaining) / 3).toInt()
     }
 
     //Define the location listener
@@ -248,43 +292,53 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         override fun onLocationChanged(location: Location) {
             this@MainActivity.location = "" + location.longitude + "," + location.latitude
         }
+
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
     }
 
-    //Define the pending Intent for sending and deliverign the sms along with the SmsManager
-    private fun sendSms(number: String, message: String){
-        val SENT:String = "SMS_SENT"
-        val DELIVERED:String = "SMS_DELIVERED"
+    //Define the pending Intent for sending and delivering the sms along with the SmsManager
+    private fun sendSms(number: String, message: String) {
+        val smsManager: SmsManager = SmsManager.getDefault()
+        val parts: ArrayList<String> = smsManager.divideMessage(message)
+        val numParts = parts.size
 
-        var sentPI:PendingIntent = PendingIntent.getBroadcast(this,0,Intent(SENT), 0)
-        var deliveredPI:PendingIntent = PendingIntent.getBroadcast(this,0,Intent(DELIVERED), 0)
+        val SENT: String = "SMS_SENT"
+        val DELIVERED: String = "SMS_DELIVERED"
 
-        val sendSMS:BroadcastReceiver = object : BroadcastReceiver() {
+        val sentPI = ArrayList<PendingIntent>()
+        val deliveredPI = ArrayList<PendingIntent>()
+
+        for (i in 0 until numParts) {
+            sentPI.add(PendingIntent.getBroadcast(this, 0, Intent(SENT), 0))
+            deliveredPI.add(PendingIntent.getBroadcast(this, 0, Intent(DELIVERED), 0))
+        }
+
+        val sendSMS: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                when(resultCode){
-                    Activity.RESULT_OK -> {
-                        Toast.makeText(applicationContext, "تم إرسال الرسالة", Toast.LENGTH_SHORT).show()
-                        startTimer()
-                    }
-                    SmsManager.RESULT_ERROR_NO_SERVICE -> Toast.makeText(applicationContext, "لا توجد إشارة",
-                        Toast.LENGTH_SHORT).show();
-                    else -> Toast.makeText(applicationContext, "لا يوجد رصيد",
-                        Toast.LENGTH_SHORT).show();
+                when (resultCode) {
+                    Activity.RESULT_OK ->
+                        Toasty.success(this@MainActivity, "SMS sent success!", Toasty.LENGTH_SHORT, true).show()
+                    SmsManager.RESULT_ERROR_NO_SERVICE ->
+                        Toasty.error(this@MainActivity, "No active network to send SMS.", Toasty.LENGTH_SHORT, true).show()
+                    SmsManager.RESULT_ERROR_RADIO_OFF ->
+                        Toasty.error(this@MainActivity, "SMS not sent 1!", Toasty.LENGTH_SHORT, true).show()
+                    SmsManager.RESULT_ERROR_GENERIC_FAILURE ->
+                        Toasty.error(this@MainActivity, "SMS not sent 2!", Toasty.LENGTH_SHORT, true).show()
+                    SmsManager.RESULT_ERROR_NULL_PDU ->
+                        Toasty.error(this@MainActivity, "SMS not sent! 3", Toasty.LENGTH_SHORT, true).show()
                 }
             }
         }
 
-        val deliverSMS:BroadcastReceiver = object : BroadcastReceiver() {
+        val deliverSMS: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                when(resultCode){
-                    Activity.RESULT_OK -> Toast.makeText(applicationContext, "تم استقبال الرسالة",
-                        Toast.LENGTH_SHORT).show();
-                    Activity.RESULT_CANCELED -> Toast.makeText(applicationContext, "لم يتم استقبال الرسالة",
-                        Toast.LENGTH_SHORT).show();
-                    else -> Toast.makeText(applicationContext, "فما مشكلة",
-                        Toast.LENGTH_SHORT).show();
+                when (resultCode) {
+                    Activity.RESULT_OK ->
+                        Toasty.success(this@MainActivity, "SMS delivered.", Toasty.LENGTH_SHORT, true).show()
+                    Activity.RESULT_CANCELED ->
+                        Toasty.error(this@MainActivity, "SMS not delivered.", Toasty.LENGTH_SHORT, true).show()
                 }
             }
 
@@ -293,8 +347,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         registerReceiver(sendSMS, IntentFilter(SENT))
         registerReceiver(deliverSMS, IntentFilter(DELIVERED))
 
-        val smsManager:SmsManager = SmsManager.getDefault()
-        smsManager.sendTextMessage(number, null, message,sentPI ,deliveredPI )
+        smsManager.sendMultipartTextMessage(number,null,parts,sentPI,deliveredPI)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -305,73 +358,18 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         return super.dispatchTouchEvent(ev)
     }
 
-    private fun addImpound(impound: Impound, onResult: (Int?) -> Unit){
+    private fun addImpound(impound: Impound, onResult: (Int?) -> Unit) {
         val retrofit = ImpoundApiAdapter.buildService(ApiClient::class.java)
         retrofit.addImpound(impound).enqueue(
             object : Callback<Impound> {
                 override fun onFailure(call: Call<Impound>, t: Throwable) {
                     onResult(null)
                 }
+
                 override fun onResponse(call: Call<Impound>, response: Response<Impound>) {
                     onResult(response.code())
                 }
             }
         )
     }
-
-    private fun uploadPhoto(imageName: RequestBody, file: MultipartBody.Part, onResult: (String) -> Unit){
-        val retrofit = UploadFileAdapter.buildService(ApiClient::class.java)
-        retrofit.uploadPhoto(imageName, file).enqueue(
-            object: Callback<String> {
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    onResult(null.toString())
-                }
-
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    response.body()?.let { onResult(it) }
-                }
-
-            }
-        )
-    }
-
-    private fun buildImageBodyPart(fileName: String, bitmap: Bitmap):  MultipartBody.Part {
-        val leftImageFile = convertBitmapToFile(fileName, bitmap)
-        val reqFile = leftImageFile.asRequestBody("image/*".toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData(fileName,leftImageFile.name, reqFile)
-    }
-
-    private fun convertBitmapToFile(fileName: String, bitmap: Bitmap): File {
-        //create a file to write bitmap data
-        val file = File(applicationContext.cacheDir, fileName)
-        file.createNewFile()
-
-        //Convert bitmap to byte array
-        val bos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos)
-        val bitMapData = bos.toByteArray()
-
-        //write the bytes in file
-        var fos: FileOutputStream? = null
-        try {
-            fos = FileOutputStream(file)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-        try {
-            fos?.write(bitMapData)
-            fos?.flush()
-            fos?.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return file
-    }
-
-    private fun createPartFromString(descriptionString: String): RequestBody {
-        return RequestBody.create(
-            okhttp3.MultipartBody.FORM, descriptionString)
-    }
-
 }
-
