@@ -8,6 +8,7 @@ import report from "./ReportReducer"
 import reportPlace from "./ReportPlaceReducer"
 import image from "./ImageReducer"
 import uploadReducer from "./uploadReducer";
+import notification from "./NotificationReducer"
 const RootReducer = combineReducers({
   auth: auth,
   impound: impound,
@@ -18,6 +19,7 @@ const RootReducer = combineReducers({
   reportPlace:reportPlace,
   image:image,
   upload: uploadReducer,
+  notification:notification
 });
 
 export default RootReducer;

@@ -43,7 +43,7 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
   const apiCallProfile = (url, method, body = {}, token = "") =>
   axios({
     method,
-    url: `http://localhost:8086/api/profile${url}`,
+    url: `https://cheng-app-profile-data.herokuapp.com/api/profile${url}`,
     data: body,
     headers: {
       ...composeToken(token),
@@ -52,7 +52,7 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
   const apiCallReport = (url, method, body = {}, token = "") =>
   axios({
     method,
-    url: `http://localhost:8087/api/report${url}`,
+    url: `https://cheng-app-report-data.herokuapp.com/api/report${url}`,
     data: body,
     headers: {
       ...composeToken(token),
@@ -61,7 +61,7 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
   const apiCallReportPlace = (url, method, body = {}, token = "") =>
   axios({
     method,
-    url: `http://localhost:8088/api/reportPlace${url}`,
+    url: `https://cheng-app-report-place.herokuapp.com/api/reportPlace${url}`,
     data: body,
     headers: {
       ...composeToken(token),
@@ -70,10 +70,19 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
   const apiCallImage = (url, method, body = {}, token = "") =>
   axios({
     method,
-    url: `http://localhost:8085/api/photos${url}`,
+    url: `https://cheng-app-upload-photo.herokuapp.com/api/photos${url}`,
     data: body,
     headers: {
       ...composeToken(token),
     },
   });
-export { apiCallImage,apiCallAuth, apiCallImpound, apiCallPlace, apiCallCitizen, apiCallProfile ,apiCallReport ,apiCallReportPlace};
+  const apiCallNotification = (url, method, body = {}, token = "") =>
+  axios({
+    method,
+    url: `http://localhost:8089/api/notification${url}`,
+    data: body,
+    headers: {
+      ...composeToken(token),
+    },
+  });
+export { apiCallNotification,apiCallImage,apiCallAuth, apiCallImpound, apiCallPlace, apiCallCitizen, apiCallProfile ,apiCallReport ,apiCallReportPlace};
