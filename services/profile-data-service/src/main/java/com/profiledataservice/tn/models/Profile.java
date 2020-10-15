@@ -1,5 +1,7 @@
 package com.profiledataservice.tn.models;
 
+import java.util.Date;
+
 import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.Id;
@@ -33,6 +35,16 @@ public class Profile {
 
 	@Size(max = 20)
 	private int telephone;
+
+	private Date createDate = new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public String getId() {
 		return id;

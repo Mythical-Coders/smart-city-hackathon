@@ -1,5 +1,7 @@
 package com.placedataservice.tn.models;
 
+import java.util.Date;
+
 import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.Id;
@@ -16,6 +18,9 @@ import lombok.NoArgsConstructor;
 public class Place {
 	@Id
 	private String id;
+	
+	@Size(max = 50)
+	private String name;
 	
 	@Size(max = 50)
 	private float latitude;
@@ -35,6 +40,14 @@ public class Place {
 	@Size(max = 30)
 	private String ville;
 	
+	private Date createDate = new Date();
+	
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 	public String getId() {
 		return id;
 	}
@@ -77,6 +90,12 @@ public class Place {
 	}
 	public void setVille(String ville) {
 		this.ville = ville;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

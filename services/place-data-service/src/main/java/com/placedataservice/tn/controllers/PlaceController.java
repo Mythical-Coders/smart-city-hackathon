@@ -74,6 +74,8 @@ public class PlaceController {
 		oldPlace.setLongitude(newPlace.getLongitude());
 		oldPlace.setRegion(newPlace.getRegion());
 		oldPlace.setVille(newPlace.getVille());
+		oldPlace.setName(newPlace.getName());
+
 		return placeRepo.save(oldPlace);
 	}
 

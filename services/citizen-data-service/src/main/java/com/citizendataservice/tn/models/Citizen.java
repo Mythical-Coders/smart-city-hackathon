@@ -1,5 +1,7 @@
 package com.citizendataservice.tn.models;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -17,18 +19,27 @@ import lombok.NoArgsConstructor;
 public class Citizen {
 	@Id
 	private String id;
-	
+
 	@NotBlank
 	private String matricule;
-	
+
 	@NotBlank
-	@Size(max = 8,min = 8)
+	@Size(max = 8, min = 8)
 	private int telephone;
-	
+
 	@NotBlank
-	@Size(max = 8,min = 8)
+	@Size(max = 8, min = 8)
 	private String cin;
 
+	private Date createDate= new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public String getId() {
 		return id;
@@ -61,6 +72,5 @@ public class Citizen {
 	public void setCin(String cin) {
 		this.cin = cin;
 	}
-
 
 }

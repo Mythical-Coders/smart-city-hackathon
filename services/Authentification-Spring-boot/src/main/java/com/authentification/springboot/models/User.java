@@ -1,5 +1,6 @@
 package com.authentification.springboot.models;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,16 @@ public class User {
 
 	@DBRef
 	private Set<Role> roles = new HashSet<>();
+	
+	private Date createDate= new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public User() {
 	}

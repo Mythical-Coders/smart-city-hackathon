@@ -38,12 +38,22 @@ public class Impound {
 	private Date paidDate;
 	private Boolean paid = false;
 	private Boolean released = false;
-	//where gonna put cars
+	// where gonna put cars
 	private String idPlace;
-	//from where cars taken
+	// from where cars taken
 	private String idPlaceTake;
 	private String idImageFront;
 	private String idImageBack;
+
+	private Date createDate = new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public String getId() {
 		return id;

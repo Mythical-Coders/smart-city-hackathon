@@ -1,5 +1,7 @@
 package com.reportdataservice.tn.models;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -25,6 +27,16 @@ public class Report {
 	private String idImage;
 	@NotBlank
 	private String idPlace;
+	
+	private Date createDate = new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public String getId() {
 		return id;

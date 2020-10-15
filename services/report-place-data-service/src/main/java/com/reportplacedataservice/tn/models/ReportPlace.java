@@ -1,5 +1,7 @@
 package com.reportplacedataservice.tn.models;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -29,6 +31,16 @@ public class ReportPlace {
 
 	@NotBlank
 	private String adress;
+
+	private Date createDate = new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 	public String getId() {
 		return id;

@@ -1,6 +1,9 @@
 package com.example.demo;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
+
 import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 //import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,13 +17,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Photo {
-    @Id
-    private String id;
-    
-    private String title;
-    private Binary image; 
-    
-    public Photo(String title) {
+	@Id
+	private String id;
+
+	private String title;
+	private Binary image;
+
+	private Date createDate = new Date();
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Photo(String title) {
 		super();
 		this.title = title;
 	}
@@ -49,6 +62,4 @@ public class Photo {
 		this.image = image;
 	}
 
-	
 }
-
