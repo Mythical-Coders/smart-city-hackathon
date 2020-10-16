@@ -5,6 +5,7 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import com.google.android.material.navigation.NavigationView
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.classes.Photo
 import esprims.gi2.chengappcitizen.classes.PhotoManager
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         photoManager.openReadDB()
         list=photoManager.getPhoto()
+
         list_id.adapter = ArrayAdapter<Photo>(this,android.R.layout.simple_list_item_1,list)
 
         photoManager.closeDB()

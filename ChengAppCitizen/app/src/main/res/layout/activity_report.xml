@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".activities.ReportActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/text_desc"
         android:layout_width="wrap_content"
@@ -70,6 +80,7 @@
         android:layout_width="181dp"
         android:layout_height="153dp"
         android:visibility="invisible"
+        android:background="@drawable/edit_round"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.786"

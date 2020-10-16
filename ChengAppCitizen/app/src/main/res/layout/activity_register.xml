@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.RegisterActivity">
 
+
+
     <EditText
         android:id="@+id/signUpEmailId"
         android:layout_width="300dp"

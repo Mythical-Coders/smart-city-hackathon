@@ -28,33 +28,39 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import esprims.gi2.chengappcitizen.adapters.Mapadapter
+import esprims.gi2.chengappcitizen.adapters.ProfileAdapter
 import esprims.gi2.chengappcitizen.models.*
 import esprims.gi2.chengappcitizen.preference.AppPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import java.time.Instant
+import java.time.Instant.now
+import java.time.LocalDate.now
+import java.time.LocalDateTime
 import java.util.*
 
 
 class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     //variables for database
-    private val convert:DbBitmapUtility = DbBitmapUtility()
-    private val photoManager:PhotoManager = PhotoManager(this)
+    private val convert: DbBitmapUtility = DbBitmapUtility(this)
+    private val photoManager: PhotoManager = PhotoManager(this)
 
     //init locationManager
-    private var locationManager : LocationManager? = null
+    private var locationManager: LocationManager? = null
 
     //Location string used to store the latitude and longitude from the location listener
-    var lat: String = ""
-    var long: String = ""
+    lateinit var lat: String
+    lateinit var long: String
 
     //variable to store the id of @post location
-    var idLocation:String ="0000"
+    private lateinit var idLocation: String
 
     //variable to the type of the report
-    var type=""
+    var type = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,26 +69,32 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
         //hide or show view deppending radio checks
         radioGroup.setOnCheckedChangeListener(
-            RadioGroup.OnCheckedChangeListener{ group,checkedId ->
+            RadioGroup.OnCheckedChangeListener { group, checkedId ->
 
-                if (R.id.radioOther==checkedId){
+                if (R.id.radioOther == checkedId) {
 
                     text_desc.visibility = View.VISIBLE
                     descriptionId.visibility = View.VISIBLE
-                }
-                else{
+                } else {
                     text_desc.visibility = View.INVISIBLE
                     descriptionId.visibility = View.INVISIBLE
-                    }
                 }
-            )
+            }
+        )
 
         //This is the default status for take photo button, it will be enabled when you allow camera
         photo_btn.isEnabled = false
-        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 111)
-        }
-        else
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.CAMERA),
+                111
+            )
+        } else
             photo_btn.isEnabled = true
 
 
@@ -94,9 +106,6 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             startActivityForResult(i, 101)
 
         }
-
-
-
 
 
         //send Report
@@ -127,13 +136,14 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             }
             if (type != "noValue") {
-
-                val idPLace: String = addPlace()
+                val instant: Instant
+                val idPLace = "idlocationTest"
                 val idImage: String = addPhoto()
-                val idUser:String = AppPreference.id
+                val idUser: String = AppPreference.id
+
                 launch(Dispatchers.Main) {
                     try {
-                        val reportRequest = ReportRequest(idUser,type,idImage,idPLace)
+                        val reportRequest = ReportRequest(idUser, type, idImage, idPLace)
                         addReport(reportRequest) {
                             if (it != null) {
                                 Toast.makeText(
@@ -141,9 +151,15 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                                     "تم إرسال البلاغ بنجاح",
                                     Toast.LENGTH_LONG
                                 ).show()
-                                setResult(Activity.RESULT_CANCELED)
-                                finish()
+                                /*setResult(Activity.RESULT_CANCELED)
+                                finish()*/
 
+                            } else {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "errorr !!!",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
 
@@ -165,11 +181,11 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     //and set the image view with the picture taken
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 101){
-            if(resultCode == -1){
+        if (requestCode == 101) {
+            if (resultCode == -1) {
                 done_icon.visibility = View.VISIBLE
                 photoView.visibility = View.VISIBLE
-                if (data !=null){
+                if (data != null) {
 
                     //set the image view with camera picture
                     val imageBitMap = data.extras?.get("data") as Bitmap
@@ -177,7 +193,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
 
                     //store image in database
-                    val imageByte:ByteArray =convert.getbytes(imageBitMap)
+                    val imageByte: ByteArray = convert.getbytes(imageBitMap)
                     //add title to db as the type of the report
                     when {
                         radioParking.isChecked -> {
@@ -191,21 +207,20 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                             type = descriptionId.text.toString()
                         }
                     }
-                    val photo = Photo(type,imageByte) //add typeReportLater
+                    /*val photo = Photo(type,imageByte) //add typeReportLater
                     photoManager.openWriteDB()
                     photoManager.addPhoto(photo)
-                    photoManager.closeDB()
-                }
-                else{
-                    Toast.makeText(applicationContext,"did not read intent",Toast.LENGTH_LONG).show()
+                    photoManager.closeDB()*/
+                } else {
+                    Toast.makeText(applicationContext, "did not read intent", Toast.LENGTH_LONG)
+                        .show()
                 }
 
-            }
-
-            else
+            } else
                 error_icon.visibility = View.VISIBLE
         }
     }
+
     //When Camera permission is granted the button will be enabled
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -213,21 +228,21 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        if (requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             photo_btn.isEnabled = true
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 222 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+        }
+
     }
 
-    private fun addPhotoService(photoRequest: PhotoRequest): String{
-        //To be added after the next commit
-        val retrofit = PhotoAdapter.buildService((ApiClient::class.java))
-        return  "id"
 
-    }
-
-    private fun addReport(reportRequest: ReportRequest,onResult:(ReportResponse?)->Unit){
+    private fun addReport(reportRequest: ReportRequest, onResult: (ReportResponse?) -> Unit) {
         val retrofit = ReportAdapter.buildService(ApiClient::class.java)
         retrofit.addReport(reportRequest).enqueue(
-            object : retrofit2.Callback<ReportResponse>{
+            object : retrofit2.Callback<ReportResponse> {
                 override fun onFailure(call: Call<ReportResponse>, t: Throwable) {
                     onResult(null)
                 }
@@ -236,7 +251,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     call: Call<ReportResponse>,
                     response: Response<ReportResponse>
                 ) {
-                   val addReport = response.body()
+                    val addReport = response.body()
                     onResult(addReport)
                 }
 
@@ -250,16 +265,17 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             this@ReportActivity.lat = "" + location.latitude
             this@ReportActivity.long = "" + location.longitude
         }
+
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
     }
 
 
-    private fun addPlaceService(mapRequest: MapRequest,onResult:(MapResponse?)->Unit){
+    private fun addPlaceService(mapRequest: MapRequest, onResult: (MapResponse?) -> Unit) {
         val retrofit = Mapadapter.buildService(ApiClient::class.java)
         retrofit.addPlace(mapRequest).enqueue(
-            object : retrofit2.Callback<MapResponse>{
+            object : retrofit2.Callback<MapResponse> {
                 override fun onFailure(call: Call<MapResponse>, t: Throwable) {
                     onResult(null)
                 }
@@ -277,62 +293,121 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     //function to post the location and return id of the @POST method
-    private fun addPlace():String{
+    private fun addPlace(): String {
 
 
         //This is for extracting the location
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
 
         //Permission check for Location
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 222)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                222
+            )
         }
 
         //Link the location manager with location listener to get location as soon as it changed
-        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
-        if(lat !="" && long!="") {
-            val geocoder = Geocoder(applicationContext, Locale.getDefault())
-            val address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
+        locationManager?.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER,
+            0L,
+            0f,
+            locationListener
+        )
 
-            //variables for @POST
-            val typeLocation = "report"
-            val adr = address.toString()
 
-            launch(Dispatchers.Main) {
-                try {
+        val geocoder = Geocoder(applicationContext, Locale.getDefault())
+        val address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
 
-                    val mapRequest = MapRequest(typeLocation,long.toDouble(),lat.toDouble(),adr)
-                    addPlaceService(mapRequest){
-                        if(it!=null){
-                            idLocation = it.id
+        //variables for @POST
+        val typeLocation = "report"
+        val adr = address.toString()
 
-                        }
+        launch(Dispatchers.Main) {
+            try {
+
+                val mapRequest = MapRequest(typeLocation, long.toDouble(), lat.toDouble(), adr)
+                addPlaceService(mapRequest) {
+                    if (it != null) {
+                        idLocation = it.id
 
                     }
-                }catch(e: Exception){
-                    Toast.makeText(applicationContext,
-                        "Error Occurred: ${e.message}",
-                        Toast.LENGTH_LONG).show()
-                }
-            }
 
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    applicationContext,
+                    "Error Occurred: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
+
+
 
         return idLocation
 
     }
-    private fun addPhoto():String{
+
+    private fun addPhoto(): String {
 
         //implement addPhotoservice
         //travail next commit
+        //return variable
+        var id= ""
+        //variables
+        val imageName: String = "image name"
+        val imageView: View = photoView.findViewById<View>(R.id.photoView)
+        val imageBitMap: Bitmap = convert.getBitMapFromView(imageView)
+        val imageFile = convert.buildImageBodyPart("imageFile", imageBitMap)
 
-        return "to be added later" //return id from @POST
+        launch(Dispatchers.Main) {
+            try {
+                val photoRequest = PhotoRequest(imageName, imageFile)
+                addPhotoService(photoRequest) {
+                    if (it != "failed") {
+                        id = it.toString()
+                    } else {
+                        id = "image not found1"
+                    }
+                }
+
+            } catch (e: Exception) {
+                Toast.makeText(
+                    applicationContext,
+                    "Error Occurred: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        return id
+
     }
 
+    private fun addPhotoService(photoRequest: PhotoRequest, onresult: (String?) -> Unit) {
+        val retrofit = PhotoAdapter.buildService(ApiClient::class.java)
+        retrofit.addPhoto(photoRequest.imageName, photoRequest.imageFile).enqueue(
+            object : retrofit2.Callback<String> {
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    onresult("failed")
+                }
+
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    val id = response.body()
+                    onresult(id)
+                }
+
+            }
+        )
+    }
 }
 
 

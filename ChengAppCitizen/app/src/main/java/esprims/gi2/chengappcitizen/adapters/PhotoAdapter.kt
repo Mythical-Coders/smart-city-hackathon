@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object PhotoAdapter {
     private val client = OkHttpClient.Builder().build()
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://cheng-app-upload-photo.herokuapp.com/ ")
+        .baseUrl("https://cheng-app-upload-photo.herokuapp.com/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.widget.Toast
+import androidx.preference.PreferenceFragmentCompat
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.adapters.SignInAdapter
 import esprims.gi2.chengappcitizen.models.SignInRequest
@@ -92,6 +93,7 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
 
     }
+
 
   /*  override fun OnActivityResult(requestCode: Int, resultCode: Int,data:Intent?){
 
