@@ -33,6 +33,7 @@
     <string name="sendReport">إرسال البلاغ</string>
     <string name="profile">تحديث الحساب</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="backList">الرجوع</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

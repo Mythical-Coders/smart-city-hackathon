@@ -70,6 +70,7 @@ class ProfileActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             object : retrofit2.Callback<ProfileResponse>{
                 override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
                     onResult(null)
+
                 }
 
                 override fun onResponse(

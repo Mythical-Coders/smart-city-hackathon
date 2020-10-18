@@ -1,45 +1,37 @@
 package esprims.gi2.chengappcitizen.activities
 
+import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.provider.MediaStore
-import android.view.View
-import android.widget.RadioGroup
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import esprims.gi2.chengappcitizen.R
-import esprims.gi2.chengappcitizen.adapters.PhotoAdapter
-import esprims.gi2.chengappcitizen.adapters.ReportAdapter
-import esprims.gi2.chengappcitizen.classes.DbBitmapUtility
-import esprims.gi2.chengappcitizen.classes.Photo
-import esprims.gi2.chengappcitizen.classes.PhotoManager
-import esprims.gi2.chengappcitizen.rest.ApiClient
-import kotlinx.android.synthetic.main.activity_report.*
-import retrofit2.Call
-import retrofit2.Response
-import android.Manifest
-import android.app.Activity
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
+import android.provider.MediaStore
+import android.util.JsonReader
+import android.view.View
+import android.widget.RadioGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.adapters.Mapadapter
-import esprims.gi2.chengappcitizen.adapters.ProfileAdapter
+import esprims.gi2.chengappcitizen.adapters.PhotoAdapter
+import esprims.gi2.chengappcitizen.adapters.ReportAdapter
+import esprims.gi2.chengappcitizen.classes.DbBitmapUtility
+import esprims.gi2.chengappcitizen.classes.PhotoManager
 import esprims.gi2.chengappcitizen.models.*
 import esprims.gi2.chengappcitizen.preference.AppPreference
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
+import esprims.gi2.chengappcitizen.rest.ApiClient
+import kotlinx.android.synthetic.main.activity_report.*
+import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Response
 import java.time.Instant
-import java.time.Instant.now
-import java.time.LocalDate.now
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -59,6 +51,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     //variable to store the id of @post location
     private lateinit var idLocation: String
 
+    var idPhoto =""
     //variable to the type of the report
     var type = ""
 
@@ -138,12 +131,12 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             if (type != "noValue") {
                 val instant: Instant
                 val idPLace = "idlocationTest"
-                val idImage: String = addPhoto()
                 val idUser: String = AppPreference.id
 
                 launch(Dispatchers.Main) {
                     try {
-                        val reportRequest = ReportRequest(idUser, type, idImage, idPLace)
+                        addPhoto()
+                        val reportRequest = ReportRequest(idUser, type, idPhoto, idPLace)
                         addReport(reportRequest) {
                             if (it != null) {
                                 Toast.makeText(
@@ -357,56 +350,74 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     }
 
-    private fun addPhoto(): String {
+    private suspend fun addPhoto() {
 
         //implement addPhotoservice
         //travail next commit
         //return variable
-        var id= ""
+        var id=""
         //variables
-        val imageName: String = "image name"
+        val imageName: String = "image name test"
         val imageView: View = photoView.findViewById<View>(R.id.photoView)
         val imageBitMap: Bitmap = convert.getBitMapFromView(imageView)
         val imageFile = convert.buildImageBodyPart("imageFile", imageBitMap)
 
-        launch(Dispatchers.Main) {
-            try {
-                val photoRequest = PhotoRequest(imageName, imageFile)
-                addPhotoService(photoRequest) {
-                    if (it != "failed") {
-                        id = it.toString()
-                    } else {
-                        id = "image not found1"
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                try {
+                    val photoRequest = PhotoRequest(imageName, imageFile)
+                    addPhotoService(photoRequest) {
+                            if(it!="failed") {
+                                id = it
+                            }
+                        else{
+                                id = "image not found"
+                            }
                     }
-                }
+                    delay(1000)
+                    idPhoto = withContext(Dispatchers.Default) {
+                            id
+                        }
 
-            } catch (e: Exception) {
-                Toast.makeText(
-                    applicationContext,
-                    "Error Occurred: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Error Occurred: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
-        return id
+
+
 
     }
 
-    private fun addPhotoService(photoRequest: PhotoRequest, onresult: (String?) -> Unit) {
+    private fun addPhotoService(photoRequest: PhotoRequest, onresult: (String) -> Unit) {
         val retrofit = PhotoAdapter.buildService(ApiClient::class.java)
         retrofit.addPhoto(photoRequest.imageName, photoRequest.imageFile).enqueue(
             object : retrofit2.Callback<String> {
                 override fun onFailure(call: Call<String>, t: Throwable) {
                     onresult("failed")
+                    Toast.makeText(
+                        applicationContext,
+                        "Error Occurred: $t",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
                 override fun onResponse(call: Call<String>, response: Response<String>) {
-                    val id = response.body()
-                    onresult(id)
+                        val id = response.body()
+                        onresult(id.toString())
                 }
 
             }
         )
+    }
+    private suspend fun getResult1FromApi(s:String): String {
+        delay(1000)
+        return s
     }
 }
 
