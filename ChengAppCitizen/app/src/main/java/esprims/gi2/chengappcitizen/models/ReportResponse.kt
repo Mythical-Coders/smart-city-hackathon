@@ -1,6 +1,7 @@
 package esprims.gi2.chengappcitizen.models
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class ReportResponse (
 
@@ -17,7 +18,11 @@ data class ReportResponse (
     val idImage:String,
 
     @SerializedName("idPlace")
-    val idPlace:String
+    val idPlace:String,
+
+    @SerializedName("createDate")
+    val createDate:Date
+
 
 
 )

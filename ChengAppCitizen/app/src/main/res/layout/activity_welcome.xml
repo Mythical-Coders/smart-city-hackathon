@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.WelcomeActivity">
 
+
+
     <Button
         android:id="@+id/signUp_btn"
         android:layout_width="300dp"

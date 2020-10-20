@@ -27,7 +27,7 @@ interface ApiClient {
     //call Upload_photo Service
     @Multipart
     @POST ("api/photos/add")
-    fun addPhoto(@Part("imageName") imageName:String,@Part("imageFile") imageFile:MultipartBody.Part):String
+    fun addPhoto(@Part("imageName") imageName:String,@Part imageFile:MultipartBody.Part):Call<String>
 
     //call Map Service
     @POST("/api/reportPlace/")

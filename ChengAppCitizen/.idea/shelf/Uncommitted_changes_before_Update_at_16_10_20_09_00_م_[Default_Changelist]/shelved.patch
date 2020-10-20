@@ -1,0 +1,1044 @@
+Index: app/src/main/java/esprims/gi2/chengappcitizen/classes/DbBitmapUtility.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.classes\n\nimport android.graphics.Bitmap\nimport android.graphics.BitmapFactory\nimport java.io.ByteArrayOutputStream\n\nclass DbBitmapUtility {\n\n    //convert from BitMap to BytesArray\n    fun getbytes(bitMap: Bitmap):ByteArray {\n        val stream: ByteArrayOutputStream = ByteArrayOutputStream()\n        bitMap.compress(Bitmap.CompressFormat.PNG, 0, stream)\n        return stream.toByteArray()\n    }\n\n\n    //convert from ByteArrays tp BitMap\n    fun getBitMap(byteArray:ByteArray):Bitmap{\n\n        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/classes/DbBitmapUtility.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/classes/DbBitmapUtility.kt	(date 1602858992000)
+@@ -1,10 +1,20 @@
+ package esprims.gi2.chengappcitizen.classes
+ 
++import android.content.Context
+ import android.graphics.Bitmap
+ import android.graphics.BitmapFactory
+-import java.io.ByteArrayOutputStream
++import android.graphics.Canvas
++import android.graphics.Color
++import android.graphics.drawable.Drawable
++import android.view.View
++import okhttp3.MediaType
++import okhttp3.MediaType.Companion.toMediaTypeOrNull
++import okhttp3.MultipartBody
++import okhttp3.RequestBody
++import okhttp3.RequestBody.Companion.asRequestBody
++import java.io.*
+ 
+-class DbBitmapUtility {
++class DbBitmapUtility(val context: Context) {
+ 
+     //convert from BitMap to BytesArray
+     fun getbytes(bitMap: Bitmap):ByteArray {
+@@ -19,4 +29,66 @@
+ 
+         return BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
+     }
++    //convert View to bit map
++    fun getBitMapFromView(view: View):Bitmap{
++        //Define a bitmap with the same size as the view
++        val returnedBitmap:Bitmap = Bitmap.createBitmap(view.width,view.height,Bitmap.Config.ARGB_8888)
++
++        //Bind a canvas to it
++        val canvas:Canvas = Canvas(returnedBitmap)
++
++        //Get the view's background
++        val drawable: Drawable = view.background
++        drawable.draw(canvas)
++
++        // draw the view on the canvas
++        view.draw(canvas)
++
++        //return
++        return returnedBitmap
++    }
++
++
++    // convert bitmap to file
++     fun convertBitmapToFile(fileName: String, bitmap: Bitmap): File {
++        //create a file to write bitmap data
++        val file = File(context.cacheDir, fileName)
++        file.createNewFile()
++
++        //Convert bitmap to byte array
++        val bos = ByteArrayOutputStream()
++        bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos)
++        val bitMapData = bos.toByteArray()
++
++        //write the bytes in file
++        var fos: FileOutputStream? = null
++        try {
++            fos = FileOutputStream(file)
++        } catch (e: FileNotFoundException) {
++            e.printStackTrace()
++        }
++        try {
++            fos?.write(bitMapData)
++            fos?.flush()
++            fos?.close()
++        } catch (e: IOException) {
++            e.printStackTrace()
++        }
++        return file
++    }
++
++    //create MultiPartBody.Part
++     fun buildImageBodyPart(fileName: String, bitmap: Bitmap):  MultipartBody.Part
++    {
++        val leftImageFile = convertBitmapToFile(fileName, bitmap)
++        val reqFile = leftImageFile.asRequestBody("image/*".toMediaTypeOrNull())
++        return MultipartBody.Part.createFormData(fileName,     leftImageFile.name, reqFile)
++    }
++
++    //create MultiPartBody.Part from bit map
++     fun callUploadImageService(image1: Bitmap){
++        val image1Part = buildImageBodyPart("imageFile", image1)
++
++        }
++
+ }
+Index: app/src/main/java/esprims/gi2/chengappcitizen/adapters/PhotoAdapter.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.adapters\n\nimport okhttp3.OkHttpClient\nimport retrofit2.Retrofit\nimport retrofit2.converter.gson.GsonConverterFactory\n\nobject PhotoAdapter {\n    private val client = OkHttpClient.Builder().build()\n    private val retrofit = Retrofit.Builder()\n        .baseUrl(\"https://cheng-app-upload-photo.herokuapp.com/ \")\n        .client(client)\n        .addConverterFactory(GsonConverterFactory.create())\n        .build()\n    fun <T> buildService(service:Class<T>):T{\n        return retrofit.create(service)\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/adapters/PhotoAdapter.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/adapters/PhotoAdapter.kt	(date 1602861556000)
+@@ -7,7 +7,7 @@
+ object PhotoAdapter {
+     private val client = OkHttpClient.Builder().build()
+     private val retrofit = Retrofit.Builder()
+-        .baseUrl("https://cheng-app-upload-photo.herokuapp.com/ ")
++        .baseUrl("https://cheng-app-upload-photo.herokuapp.com/")
+         .client(client)
+         .addConverterFactory(GsonConverterFactory.create())
+         .build()
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".activities.MainActivity\">\n\n    <ListView\n        android:id=\"@+id/list_id\"\n        android:layout_width=\"410dp\"\n        android:layout_height=\"467dp\"\n        android:layout_marginStart=\"1dp\"\n        android:layout_marginLeft=\"1dp\"\n        android:layout_marginTop=\"137dp\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\" />\n\n    <Button\n        android:id=\"@+id/report_btn\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:background=\"@drawable/button_round\"\n        android:drawableStart=\"@drawable/send\"\n        android:drawableLeft=\"@drawable/send\"\n        android:drawablePadding=\"10dp\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        android:text=\"@string/btnReport\"\n        android:textSize=\"20sp\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.495\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.92\" />\n    <TextView\n        android:id=\"@+id/loginText\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/listReports\"\n        android:textStyle=\"bold\"\n        android:textColor=\"@android:color/black\"\n        android:textSize=\"@dimen/logPassDim\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.534\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.134\" />\n\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/res/layout/activity_main.xml	(date 1602712848000)
+@@ -6,6 +6,16 @@
+     android:layout_height="match_parent"
+     tools:context=".activities.MainActivity">
+ 
++    <LinearLayout
++        android:layout_width="match_parent"
++        android:layout_height="match_parent">
++
++        <FrameLayout
++            android:id="@+id/settings"
++            android:layout_width="match_parent"
++            android:layout_height="match_parent" />
++    </LinearLayout>
++
+     <ListView
+         android:id="@+id/list_id"
+         android:layout_width="410dp"
+Index: app/src/main/java/esprims/gi2/chengappcitizen/activities/ReportActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.activities\n\nimport android.Manifest.permission.ACCESS_FINE_LOCATION\nimport android.content.Intent\nimport android.content.pm.PackageManager\nimport android.graphics.Bitmap\nimport android.location.LocationManager\nimport androidx.appcompat.app.AppCompatActivity\nimport android.os.Bundle\nimport android.provider.MediaStore\nimport android.view.View\nimport android.widget.RadioGroup\nimport android.widget.Toast\nimport androidx.core.app.ActivityCompat\nimport esprims.gi2.chengappcitizen.R\nimport esprims.gi2.chengappcitizen.adapters.PhotoAdapter\nimport esprims.gi2.chengappcitizen.adapters.ReportAdapter\nimport esprims.gi2.chengappcitizen.classes.DbBitmapUtility\nimport esprims.gi2.chengappcitizen.classes.Photo\nimport esprims.gi2.chengappcitizen.classes.PhotoManager\nimport esprims.gi2.chengappcitizen.rest.ApiClient\nimport kotlinx.android.synthetic.main.activity_report.*\nimport retrofit2.Call\nimport retrofit2.Response\nimport android.Manifest\nimport android.app.Activity\nimport android.location.Geocoder\nimport android.location.Location\nimport android.location.LocationListener\nimport esprims.gi2.chengappcitizen.adapters.Mapadapter\nimport esprims.gi2.chengappcitizen.models.*\nimport esprims.gi2.chengappcitizen.preference.AppPreference\nimport kotlinx.coroutines.CoroutineScope\nimport kotlinx.coroutines.Dispatchers\nimport kotlinx.coroutines.MainScope\nimport kotlinx.coroutines.launch\nimport java.util.*\n\n\nclass ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {\n\n    //variables for database\n    private val convert:DbBitmapUtility = DbBitmapUtility()\n    private val photoManager:PhotoManager = PhotoManager(this)\n\n    //init locationManager\n    private var locationManager : LocationManager? = null\n\n    //Location string used to store the latitude and longitude from the location listener\n    var lat: String = \"\"\n    var long: String = \"\"\n\n    //variable to store the id of @post location\n    var idLocation:String =\"0000\"\n\n    //variable to the type of the report\n    var type=\"\"\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_report)\n\n\n        //hide or show view deppending radio checks\n        radioGroup.setOnCheckedChangeListener(\n            RadioGroup.OnCheckedChangeListener{ group,checkedId ->\n\n                if (R.id.radioOther==checkedId){\n\n                    text_desc.visibility = View.VISIBLE\n                    descriptionId.visibility = View.VISIBLE\n                }\n                else{\n                    text_desc.visibility = View.INVISIBLE\n                    descriptionId.visibility = View.INVISIBLE\n                    }\n                }\n            )\n\n        //This is the default status for take photo button, it will be enabled when you allow camera\n        photo_btn.isEnabled = false\n        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){\n            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 111)\n        }\n        else\n            photo_btn.isEnabled = true\n\n\n        //take photo\n        photo_btn.setOnClickListener {\n\n\n            val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)\n            startActivityForResult(i, 101)\n\n        }\n\n\n\n\n\n        //send Report\n        sendReportId.setOnClickListener {\n\n            //declare variables for @POST method\n\n            when {\n                radioParking.isChecked -> {\n                    type = \"illegal Parking\"\n                }\n                radioaccident.isChecked -> {\n                    type = \"accident\"\n                }\n                radioOther.isChecked -> {\n\n                    type = descriptionId.text.toString()\n                }\n\n\n                else -> {\n                    Toast.makeText(\n                        applicationContext,\n                        \"الرجاء حدد نوعية المخالفة\",\n                        Toast.LENGTH_LONG\n                    ).show()\n                    type = \"noValue\"\n                }\n            }\n            if (type != \"noValue\") {\n\n                val idPLace: String = addPlace()\n                val idImage: String = addPhoto()\n                val idUser:String = AppPreference.id\n                launch(Dispatchers.Main) {\n                    try {\n                        val reportRequest = ReportRequest(idUser,type,idImage,idPLace)\n                        addReport(reportRequest) {\n                            if (it != null) {\n                                Toast.makeText(\n                                    applicationContext,\n                                    \"تم إرسال البلاغ بنجاح\",\n                                    Toast.LENGTH_LONG\n                                ).show()\n                                setResult(Activity.RESULT_CANCELED)\n                                finish()\n\n                            }\n                        }\n\n                    } catch (e: Exception) {\n                        Toast.makeText(\n                            applicationContext,\n                            \"Error Occurred: ${e.message}\",\n                            Toast.LENGTH_LONG\n                        ).show()\n                    }\n                }\n            }\n\n        }\n\n    }\n\n    //When the camera intent is done, we change the visibility of either the done or error icon\n    //and set the image view with the picture taken\n    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {\n        super.onActivityResult(requestCode, resultCode, data)\n        if(requestCode == 101){\n            if(resultCode == -1){\n                done_icon.visibility = View.VISIBLE\n                photoView.visibility = View.VISIBLE\n                if (data !=null){\n\n                    //set the image view with camera picture\n                    val imageBitMap = data.extras?.get(\"data\") as Bitmap\n                    photoView.setImageBitmap(imageBitMap)\n\n\n                    //store image in database\n                    val imageByte:ByteArray =convert.getbytes(imageBitMap)\n                    //add title to db as the type of the report\n                    when {\n                        radioParking.isChecked -> {\n                            type = \"illegal Parking\"\n                        }\n                        radioaccident.isChecked -> {\n                            type = \"accident\"\n                        }\n                        radioOther.isChecked -> {\n\n                            type = descriptionId.text.toString()\n                        }\n                    }\n                    val photo = Photo(type,imageByte) //add typeReportLater\n                    photoManager.openWriteDB()\n                    photoManager.addPhoto(photo)\n                    photoManager.closeDB()\n                }\n                else{\n                    Toast.makeText(applicationContext,\"did not read intent\",Toast.LENGTH_LONG).show()\n                }\n\n            }\n\n            else\n                error_icon.visibility = View.VISIBLE\n        }\n    }\n    //When Camera permission is granted the button will be enabled\n    override fun onRequestPermissionsResult(\n        requestCode: Int,\n        permissions: Array<out String>,\n        grantResults: IntArray\n    ) {\n        super.onRequestPermissionsResult(requestCode, permissions, grantResults)\n        if(requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)\n            photo_btn.isEnabled = true\n    }\n\n    private fun addPhotoService(photoRequest: PhotoRequest): String{\n        //To be added after the next commit\n        val retrofit = PhotoAdapter.buildService((ApiClient::class.java))\n        return  \"id\"\n\n    }\n\n    private fun addReport(reportRequest: ReportRequest,onResult:(ReportResponse?)->Unit){\n        val retrofit = ReportAdapter.buildService(ApiClient::class.java)\n        retrofit.addReport(reportRequest).enqueue(\n            object : retrofit2.Callback<ReportResponse>{\n                override fun onFailure(call: Call<ReportResponse>, t: Throwable) {\n                    onResult(null)\n                }\n\n                override fun onResponse(\n                    call: Call<ReportResponse>,\n                    response: Response<ReportResponse>\n                ) {\n                   val addReport = response.body()\n                    onResult(addReport)\n                }\n\n            }\n        )\n    }\n\n    //Define the location listener\n    private val locationListener: LocationListener = object : LocationListener {\n        override fun onLocationChanged(location: Location) {\n            this@ReportActivity.lat = \"\" + location.latitude\n            this@ReportActivity.long = \"\" + location.longitude\n        }\n        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}\n        override fun onProviderEnabled(provider: String) {}\n        override fun onProviderDisabled(provider: String) {}\n    }\n\n\n    private fun addPlaceService(mapRequest: MapRequest,onResult:(MapResponse?)->Unit){\n        val retrofit = Mapadapter.buildService(ApiClient::class.java)\n        retrofit.addPlace(mapRequest).enqueue(\n            object : retrofit2.Callback<MapResponse>{\n                override fun onFailure(call: Call<MapResponse>, t: Throwable) {\n                    onResult(null)\n                }\n\n                override fun onResponse(\n                    call: Call<MapResponse>,\n                    response: Response<MapResponse>\n                ) {\n                    val addPlace = response.body()\n                    onResult(addPlace)\n                }\n\n            }\n        )\n    }\n\n    //function to post the location and return id of the @POST method\n    private fun addPlace():String{\n\n\n        //This is for extracting the location\n        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?\n\n        //Permission check for Location\n        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(\n                this,\n                Manifest.permission.ACCESS_COARSE_LOCATION\n            ) != PackageManager.PERMISSION_GRANTED\n        ) {\n            ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 222)\n        }\n\n        //Link the location manager with location listener to get location as soon as it changed\n        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)\n        if(lat !=\"\" && long!=\"\") {\n            val geocoder = Geocoder(applicationContext, Locale.getDefault())\n            val address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)\n\n            //variables for @POST\n            val typeLocation = \"report\"\n            val adr = address.toString()\n\n            launch(Dispatchers.Main) {\n                try {\n\n                    val mapRequest = MapRequest(typeLocation,long.toDouble(),lat.toDouble(),adr)\n                    addPlaceService(mapRequest){\n                        if(it!=null){\n                            idLocation = it.id\n\n                        }\n\n                    }\n                }catch(e: Exception){\n                    Toast.makeText(applicationContext,\n                        \"Error Occurred: ${e.message}\",\n                        Toast.LENGTH_LONG).show()\n                }\n            }\n\n        }\n\n        return idLocation\n\n    }\n    private fun addPhoto():String{\n\n        //implement addPhotoservice\n        //travail next commit\n\n        return \"to be added later\" //return id from @POST\n    }\n\n}\n\n\n\n\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/activities/ReportActivity.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/activities/ReportActivity.kt	(date 1602877528000)
+@@ -28,33 +28,39 @@
+ import android.location.Location
+ import android.location.LocationListener
+ import esprims.gi2.chengappcitizen.adapters.Mapadapter
++import esprims.gi2.chengappcitizen.adapters.ProfileAdapter
+ import esprims.gi2.chengappcitizen.models.*
+ import esprims.gi2.chengappcitizen.preference.AppPreference
+ import kotlinx.coroutines.CoroutineScope
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.MainScope
+ import kotlinx.coroutines.launch
++import okhttp3.MultipartBody
++import java.time.Instant
++import java.time.Instant.now
++import java.time.LocalDate.now
++import java.time.LocalDateTime
+ import java.util.*
+ 
+ 
+ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+ 
+     //variables for database
+-    private val convert:DbBitmapUtility = DbBitmapUtility()
+-    private val photoManager:PhotoManager = PhotoManager(this)
++    private val convert: DbBitmapUtility = DbBitmapUtility(this)
++    private val photoManager: PhotoManager = PhotoManager(this)
+ 
+     //init locationManager
+-    private var locationManager : LocationManager? = null
++    private var locationManager: LocationManager? = null
+ 
+     //Location string used to store the latitude and longitude from the location listener
+-    var lat: String = ""
+-    var long: String = ""
++    lateinit var lat: String
++    lateinit var long: String
+ 
+     //variable to store the id of @post location
+-    var idLocation:String ="0000"
++    private lateinit var idLocation: String
+ 
+     //variable to the type of the report
+-    var type=""
++    var type = ""
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+@@ -63,26 +69,32 @@
+ 
+         //hide or show view deppending radio checks
+         radioGroup.setOnCheckedChangeListener(
+-            RadioGroup.OnCheckedChangeListener{ group,checkedId ->
++            RadioGroup.OnCheckedChangeListener { group, checkedId ->
+ 
+-                if (R.id.radioOther==checkedId){
++                if (R.id.radioOther == checkedId) {
+ 
+                     text_desc.visibility = View.VISIBLE
+                     descriptionId.visibility = View.VISIBLE
+-                }
+-                else{
++                } else {
+                     text_desc.visibility = View.INVISIBLE
+                     descriptionId.visibility = View.INVISIBLE
+-                    }
+-                }
+-            )
++                }
++            }
++        )
+ 
+         //This is the default status for take photo button, it will be enabled when you allow camera
+         photo_btn.isEnabled = false
+-        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 111)
+-        }
+-        else
++        if (ActivityCompat.checkSelfPermission(
++                this,
++                android.Manifest.permission.CAMERA
++            ) != PackageManager.PERMISSION_GRANTED
++        ) {
++            ActivityCompat.requestPermissions(
++                this,
++                arrayOf(android.Manifest.permission.CAMERA),
++                111
++            )
++        } else
+             photo_btn.isEnabled = true
+ 
+ 
+@@ -96,9 +108,6 @@
+         }
+ 
+ 
+-
+-
+-
+         //send Report
+         sendReportId.setOnClickListener {
+ 
+@@ -127,13 +136,14 @@
+                 }
+             }
+             if (type != "noValue") {
+-
+-                val idPLace: String = addPlace()
++                val instant: Instant
++                val idPLace = "idlocationTest"
+                 val idImage: String = addPhoto()
+-                val idUser:String = AppPreference.id
++                val idUser: String = AppPreference.id
++
+                 launch(Dispatchers.Main) {
+                     try {
+-                        val reportRequest = ReportRequest(idUser,type,idImage,idPLace)
++                        val reportRequest = ReportRequest(idUser, type, idImage, idPLace)
+                         addReport(reportRequest) {
+                             if (it != null) {
+                                 Toast.makeText(
+@@ -141,9 +151,15 @@
+                                     "تم إرسال البلاغ بنجاح",
+                                     Toast.LENGTH_LONG
+                                 ).show()
+-                                setResult(Activity.RESULT_CANCELED)
+-                                finish()
++                                /*setResult(Activity.RESULT_CANCELED)
++                                finish()*/
+ 
++                            } else {
++                                Toast.makeText(
++                                    applicationContext,
++                                    "errorr !!!",
++                                    Toast.LENGTH_LONG
++                                ).show()
+                             }
+                         }
+ 
+@@ -165,11 +181,11 @@
+     //and set the image view with the picture taken
+     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+         super.onActivityResult(requestCode, resultCode, data)
+-        if(requestCode == 101){
+-            if(resultCode == -1){
++        if (requestCode == 101) {
++            if (resultCode == -1) {
+                 done_icon.visibility = View.VISIBLE
+                 photoView.visibility = View.VISIBLE
+-                if (data !=null){
++                if (data != null) {
+ 
+                     //set the image view with camera picture
+                     val imageBitMap = data.extras?.get("data") as Bitmap
+@@ -177,7 +193,7 @@
+ 
+ 
+                     //store image in database
+-                    val imageByte:ByteArray =convert.getbytes(imageBitMap)
++                    val imageByte: ByteArray = convert.getbytes(imageBitMap)
+                     //add title to db as the type of the report
+                     when {
+                         radioParking.isChecked -> {
+@@ -191,21 +207,20 @@
+                             type = descriptionId.text.toString()
+                         }
+                     }
+-                    val photo = Photo(type,imageByte) //add typeReportLater
++                    /*val photo = Photo(type,imageByte) //add typeReportLater
+                     photoManager.openWriteDB()
+                     photoManager.addPhoto(photo)
+-                    photoManager.closeDB()
+-                }
+-                else{
+-                    Toast.makeText(applicationContext,"did not read intent",Toast.LENGTH_LONG).show()
++                    photoManager.closeDB()*/
++                } else {
++                    Toast.makeText(applicationContext, "did not read intent", Toast.LENGTH_LONG)
++                        .show()
+                 }
+ 
+-            }
+-
+-            else
++            } else
+                 error_icon.visibility = View.VISIBLE
+         }
+     }
++
+     //When Camera permission is granted the button will be enabled
+     override fun onRequestPermissionsResult(
+         requestCode: Int,
+@@ -213,21 +228,21 @@
+         grantResults: IntArray
+     ) {
+         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+-        if(requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
++        if (requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+             photo_btn.isEnabled = true
+-    }
+-
+-    private fun addPhotoService(photoRequest: PhotoRequest): String{
+-        //To be added after the next commit
+-        val retrofit = PhotoAdapter.buildService((ApiClient::class.java))
+-        return  "id"
++        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
++        if (requestCode == 222 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
++            setResult(Activity.RESULT_CANCELED)
++            finish()
++        }
+ 
+     }
++
+ 
+-    private fun addReport(reportRequest: ReportRequest,onResult:(ReportResponse?)->Unit){
++    private fun addReport(reportRequest: ReportRequest, onResult: (ReportResponse?) -> Unit) {
+         val retrofit = ReportAdapter.buildService(ApiClient::class.java)
+         retrofit.addReport(reportRequest).enqueue(
+-            object : retrofit2.Callback<ReportResponse>{
++            object : retrofit2.Callback<ReportResponse> {
+                 override fun onFailure(call: Call<ReportResponse>, t: Throwable) {
+                     onResult(null)
+                 }
+@@ -236,7 +251,7 @@
+                     call: Call<ReportResponse>,
+                     response: Response<ReportResponse>
+                 ) {
+-                   val addReport = response.body()
++                    val addReport = response.body()
+                     onResult(addReport)
+                 }
+ 
+@@ -250,16 +265,17 @@
+             this@ReportActivity.lat = "" + location.latitude
+             this@ReportActivity.long = "" + location.longitude
+         }
++
+         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+         override fun onProviderEnabled(provider: String) {}
+         override fun onProviderDisabled(provider: String) {}
+     }
+ 
+ 
+-    private fun addPlaceService(mapRequest: MapRequest,onResult:(MapResponse?)->Unit){
++    private fun addPlaceService(mapRequest: MapRequest, onResult: (MapResponse?) -> Unit) {
+         val retrofit = Mapadapter.buildService(ApiClient::class.java)
+         retrofit.addPlace(mapRequest).enqueue(
+-            object : retrofit2.Callback<MapResponse>{
++            object : retrofit2.Callback<MapResponse> {
+                 override fun onFailure(call: Call<MapResponse>, t: Throwable) {
+                     onResult(null)
+                 }
+@@ -277,62 +293,121 @@
+     }
+ 
+     //function to post the location and return id of the @POST method
+-    private fun addPlace():String{
++    private fun addPlace(): String {
+ 
+ 
+         //This is for extracting the location
+         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+ 
+         //Permission check for Location
+-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
++        if (ActivityCompat.checkSelfPermission(
++                this,
++                ACCESS_FINE_LOCATION
++            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                 this,
+                 Manifest.permission.ACCESS_COARSE_LOCATION
+             ) != PackageManager.PERMISSION_GRANTED
+         ) {
+-            ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 222)
++            ActivityCompat.requestPermissions(
++                this,
++                arrayOf(ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
++                222
++            )
+         }
+ 
+         //Link the location manager with location listener to get location as soon as it changed
+-        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+-        if(lat !="" && long!="") {
+-            val geocoder = Geocoder(applicationContext, Locale.getDefault())
+-            val address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
++        locationManager?.requestLocationUpdates(
++            LocationManager.NETWORK_PROVIDER,
++            0L,
++            0f,
++            locationListener
++        )
++
++
++        val geocoder = Geocoder(applicationContext, Locale.getDefault())
++        val address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
+ 
+-            //variables for @POST
+-            val typeLocation = "report"
+-            val adr = address.toString()
++        //variables for @POST
++        val typeLocation = "report"
++        val adr = address.toString()
+ 
+-            launch(Dispatchers.Main) {
+-                try {
++        launch(Dispatchers.Main) {
++            try {
+ 
+-                    val mapRequest = MapRequest(typeLocation,long.toDouble(),lat.toDouble(),adr)
+-                    addPlaceService(mapRequest){
+-                        if(it!=null){
+-                            idLocation = it.id
++                val mapRequest = MapRequest(typeLocation, long.toDouble(), lat.toDouble(), adr)
++                addPlaceService(mapRequest) {
++                    if (it != null) {
++                        idLocation = it.id
+ 
+-                        }
++                    }
+ 
+-                    }
+-                }catch(e: Exception){
+-                    Toast.makeText(applicationContext,
+-                        "Error Occurred: ${e.message}",
+-                        Toast.LENGTH_LONG).show()
+-                }
+-            }
++                }
++            } catch (e: Exception) {
++                Toast.makeText(
++                    applicationContext,
++                    "Error Occurred: ${e.message}",
++                    Toast.LENGTH_LONG
++                ).show()
++            }
++        }
+ 
+-        }
++
+ 
+         return idLocation
+ 
+     }
+-    private fun addPhoto():String{
++
++    private fun addPhoto(): String {
+ 
+         //implement addPhotoservice
+         //travail next commit
++        //return variable
++        var id= ""
++        //variables
++        val imageName: String = "image name"
++        val imageView: View = photoView.findViewById<View>(R.id.photoView)
++        val imageBitMap: Bitmap = convert.getBitMapFromView(imageView)
++        val imageFile = convert.buildImageBodyPart("imageFile", imageBitMap)
++
++        launch(Dispatchers.Main) {
++            try {
++                val photoRequest = PhotoRequest(imageName, imageFile)
++                addPhotoService(photoRequest) {
++                    if (it != "failed") {
++                        id = it.toString()
++                    } else {
++                        id = "image not found1"
++                    }
++                }
++
++            } catch (e: Exception) {
++                Toast.makeText(
++                    applicationContext,
++                    "Error Occurred: ${e.message}",
++                    Toast.LENGTH_LONG
++                ).show()
++            }
++        }
++        return id
++
++    }
++
++    private fun addPhotoService(photoRequest: PhotoRequest, onresult: (String?) -> Unit) {
++        val retrofit = PhotoAdapter.buildService(ApiClient::class.java)
++        retrofit.addPhoto(photoRequest.imageName, photoRequest.imageFile).enqueue(
++            object : retrofit2.Callback<String> {
++                override fun onFailure(call: Call<String>, t: Throwable) {
++                    onresult("failed")
++                }
+ 
+-        return "to be added later" //return id from @POST
+-    }
++                override fun onResponse(call: Call<String>, response: Response<String>) {
++                    val id = response.body()
++                    onresult(id)
++                }
+ 
++            }
++        )
++    }
+ }
+ 
+ 
+Index: app/src/main/java/esprims/gi2/chengappcitizen/rest/ApiClient.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.rest\n\nimport esprims.gi2.chengappcitizen.models.*\nimport okhttp3.MultipartBody\nimport retrofit2.Call\nimport retrofit2.http.*\n\ninterface ApiClient {\n    @Headers(\"Content-Type: application/json\")\n\n    //call signUp Service\n    @POST(\"/api/auth/signup\")\n    fun signUp(@Body signUpRequest: SignUpRequest): Call<SignUpResponse>\n\n    //call profile-citizen Service\n    @POST(\"/api/citizen/\")\n    fun addProfile(@Body profileRequest: ProfileRequest):Call<ProfileResponse>\n\n    //call signIn service\n    @POST(\"/api/auth/signin\")\n    fun signIn(@Body signInRequest: SignInRequest):Call<SignInResponse>\n\n    //call Report service\n    @POST(\"/api/report/\")\n    fun addReport(@Body reportRequest: ReportRequest):Call<ReportResponse>\n\n    //call Upload_photo Service\n    @Multipart\n    @POST (\"api/photos/add\")\n    fun addPhoto(@Part(\"imageName\") imageName:String,@Part(\"imageFile\") imageFile:MultipartBody.Part):String\n\n    //call Map Service\n    @POST(\"/api/reportPlace/\")\n    fun addPlace(@Body mapRequest: MapRequest):Call<MapResponse>\n\n\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/rest/ApiClient.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/rest/ApiClient.kt	(date 1602862228000)
+@@ -27,7 +27,7 @@
+     //call Upload_photo Service
+     @Multipart
+     @POST ("api/photos/add")
+-    fun addPhoto(@Part("imageName") imageName:String,@Part("imageFile") imageFile:MultipartBody.Part):String
++    fun addPhoto(@Part("imageName") imageName:String,@Part imageFile:MultipartBody.Part):Call<String>
+ 
+     //call Map Service
+     @POST("/api/reportPlace/")
+Index: app/src/main/java/esprims/gi2/chengappcitizen/models/PhotoRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.models\n\nimport com.fasterxml.jackson.databind.node.BinaryNode\nimport com.google.gson.annotations.SerializedName\nimport okhttp3.MultipartBody\nimport retrofit2.http.Multipart\nimport java.util.function.BinaryOperator\n\ndata class PhotoRequest (\n    @SerializedName(\"imageName\")\n    val imageName:String,\n\n    @SerializedName(\"imageFile\")\n    val imageFile:MultipartBody\n\n\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/models/PhotoRequest.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/models/PhotoRequest.kt	(date 1602861145000)
+@@ -1,9 +1,11 @@
+ package esprims.gi2.chengappcitizen.models
+ 
++import android.graphics.ColorSpace
+ import com.fasterxml.jackson.databind.node.BinaryNode
+ import com.google.gson.annotations.SerializedName
+ import okhttp3.MultipartBody
+ import retrofit2.http.Multipart
++import java.util.*
+ import java.util.function.BinaryOperator
+ 
+ data class PhotoRequest (
+@@ -11,7 +13,11 @@
+     val imageName:String,
+ 
+     @SerializedName("imageFile")
+-    val imageFile:MultipartBody
++    val imageFile:MultipartBody.Part
++
++
++
++
+ 
+ 
+ )
+\ No newline at end of file
+Index: app/src/main/java/esprims/gi2/chengappcitizen/models/ReportResponse.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.models\n\nimport com.google.gson.annotations.SerializedName\n\ndata class ReportResponse (\n\n    @SerializedName(\"id\")\n    val id:String,\n\n    @SerializedName(\"idUser\")\n    val idUser:String,\n\n    @SerializedName(\"type\")\n    val type:String,\n\n    @SerializedName(\"idImage\")\n    val idImage:String,\n\n    @SerializedName(\"idPlace\")\n    val idPlace:String\n\n\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/models/ReportResponse.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/models/ReportResponse.kt	(date 1602878183000)
+@@ -1,6 +1,7 @@
+ package esprims.gi2.chengappcitizen.models
+ 
+ import com.google.gson.annotations.SerializedName
++import java.util.*
+ 
+ data class ReportResponse (
+ 
+@@ -17,7 +18,11 @@
+     val idImage:String,
+ 
+     @SerializedName("idPlace")
+-    val idPlace:String
++    val idPlace:String,
++
++    @SerializedName("createDate")
++    val createDate:Date
++
+ 
+ 
+ )
+\ No newline at end of file
+Index: app/src/main/java/esprims/gi2/chengappcitizen/models/ReportRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.models\n\nimport com.google.gson.annotations.SerializedName\n\ndata class ReportRequest (\n\n    @SerializedName(\"idUser\")\n    val idUser:String,\n\n    @SerializedName(\"type\")\n    val type:String,\n\n    @SerializedName(\"idImage\")\n    val idImage:String,\n\n    @SerializedName(\"idPlace\")\n    val idPlace:String\n\n\n\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/models/ReportRequest.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/models/ReportRequest.kt	(date 1602877528000)
+@@ -1,6 +1,7 @@
+ package esprims.gi2.chengappcitizen.models
+ 
+ import com.google.gson.annotations.SerializedName
++import java.util.*
+ 
+ data class ReportRequest (
+ 
+@@ -18,4 +19,5 @@
+ 
+ 
+ 
++
+ )
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/compiler.xml	(date 1602849414000)
++++ .idea/compiler.xml	(date 1602849414000)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <bytecodeTargetLevel target="1.8" />
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/res/xml/root_preferences.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/xml/root_preferences.xml	(date 1602710547000)
++++ app/src/main/res/xml/root_preferences.xml	(date 1602710547000)
+@@ -0,0 +1,35 @@
++<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
++
++    <PreferenceCategory app:title="@string/messages_header">
++
++        <EditTextPreference
++            app:key="signature"
++            app:title="@string/signature_title"
++            app:useSimpleSummaryProvider="true" />
++
++        <ListPreference
++            app:defaultValue="reply"
++            app:entries="@array/reply_entries"
++            app:entryValues="@array/reply_values"
++            app:key="reply"
++            app:title="@string/reply_title"
++            app:useSimpleSummaryProvider="true" />
++
++    </PreferenceCategory>
++
++    <PreferenceCategory app:title="@string/sync_header">
++
++        <SwitchPreferenceCompat
++            app:key="sync"
++            app:title="@string/sync_title" />
++
++        <SwitchPreferenceCompat
++            app:dependency="sync"
++            app:key="attachment"
++            app:summaryOff="@string/attachment_summary_off"
++            app:summaryOn="@string/attachment_summary_on"
++            app:title="@string/attachment_title" />
++
++    </PreferenceCategory>
++
++</PreferenceScreen>
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"esprims.gi2.chengappcitizen\">\n\n    <uses-feature\n        android:name=\"android.hardware.camera\"\n        android:required=\"true\" />\n\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />\n    <uses-permission android:name=\"android.permission.SEND_SMS\" />\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>\n\n\n    <application\n        android:allowBackup=\"true\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\n        android:supportsRtl=\"true\"\n        android:theme=\"@style/AppTheme\">\n        <activity android:name=\".activities.ProfileActivity\" />\n        <activity android:name=\".activities.RegisterActivity\" >\n        </activity >\n        <activity android:name=\".activities.WelcomeActivity\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n\n        </activity>\n        <activity android:name=\".activities.ReportActivity\" />\n        <activity android:name=\".activities.MainActivity\" />\n    </application>\n\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/AndroidManifest.xml	(date 1602710547000)
+@@ -12,10 +12,9 @@
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.SEND_SMS" />
+-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
++    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
++    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+ 
+-
+     <application
+         android:allowBackup="true"
+         android:icon="@mipmap/ic_launcher"
+@@ -23,16 +22,17 @@
+         android:roundIcon="@mipmap/ic_launcher_round"
+         android:supportsRtl="true"
+         android:theme="@style/AppTheme">
++        <activity
++            android:name=".activities.SettingsActivity"
++            android:label="@string/title_activity_settings"></activity>
+         <activity android:name=".activities.ProfileActivity" />
+-        <activity android:name=".activities.RegisterActivity" >
+-        </activity >
++        <activity android:name=".activities.RegisterActivity"></activity>
+         <activity android:name=".activities.WelcomeActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+ 
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+-
+         </activity>
+         <activity android:name=".activities.ReportActivity" />
+         <activity android:name=".activities.MainActivity" />
+Index: app/src/main/res/layout/settings_activity.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/settings_activity.xml	(date 1602710547000)
++++ app/src/main/res/layout/settings_activity.xml	(date 1602710547000)
+@@ -0,0 +1,9 @@
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++    <FrameLayout
++        android:id="@+id/settings"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent" />
++</LinearLayout>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_1_8\" project-jdk-name=\"1.8\" project-jdk-type=\"JavaSDK\">\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\n  </component>\n  <component name=\"ProjectType\">\n    <option name=\"id\" value=\"Android\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ .idea/misc.xml	(date 1602849413000)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
+Index: app/src/main/res/layout/activity_welcome.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".activities.WelcomeActivity\">\n\n    <Button\n        android:id=\"@+id/signUp_btn\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:background=\"@drawable/button_round\"\n        android:drawableStart=\"@drawable/send\"\n        android:drawableLeft=\"@drawable/send\"\n        android:drawablePadding=\"10dp\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        android:text=\"@string/signUp\"\n        android:textSize=\"20sp\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.817\" />\n\n    <Button\n        android:id=\"@+id/signIn_btn\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:background=\"@drawable/button_round\"\n        android:drawableStart=\"@drawable/send\"\n        android:drawableLeft=\"@drawable/send\"\n        android:drawablePadding=\"10dp\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        android:text=\"@string/login\"\n        android:textSize=\"20sp\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.468\" />\n\n    <TextView\n        android:id=\"@+id/loginText\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/userName\"\n        android:textColor=\"@android:color/black\"\n        android:textSize=\"@dimen/logPassDim\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.536\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.075\" />\n\n    <TextView\n        android:id=\"@+id/registerText\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/registerText\"\n        android:textColor=\"@android:color/secondary_text_light\"\n        android:textSize=\"@dimen/logPassDim\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.526\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.718\" />\n\n    <TextView\n        android:id=\"@+id/passwordText\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/password\"\n        android:textColor=\"@android:color/black\"\n        android:textSize=\"@dimen/logPassDim\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.524\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.254\" />\n\n    <EditText\n        android:id=\"@+id/passId\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:autofillHints=\"\"\n        android:background=\"@drawable/edit_round\"\n        android:drawable=\"@drawable/password\"\n        android:drawablePadding=\"10dp\"\n        android:ems=\"10\"\n        android:hint=\"@string/password_hint\"\n        android:inputType=\"textPassword\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.33\" />\n\n    <ImageView\n        android:id=\"@+id/show_pass\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:layout_margin=\"10dp\"\n        android:contentDescription=\"@string/show_hide_button\"\n        android:src=\"@drawable/show_pass\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.0\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.333\" />\n\n    <EditText\n        android:id=\"@+id/loginId\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:autofillHints=\"\"\n        android:background=\"@drawable/edit_round\"\n        android:drawable=\"@drawable/user\"\n        android:drawablePadding=\"10dp\"\n        android:ems=\"10\"\n        android:hint=\"@string/login_hint\"\n        android:inputType=\"textPersonName\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.148\" />\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_welcome.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/res/layout/activity_welcome.xml	(date 1602712848000)
+@@ -6,6 +6,8 @@
+     android:layout_height="match_parent"
+     tools:context=".activities.WelcomeActivity">
+ 
++
++
+     <Button
+         android:id="@+id/signUp_btn"
+         android:layout_width="300dp"
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"GradleMigrationSettings\" migrationVersion=\"1\" />\n  <component name=\"GradleSettings\">\n    <option name=\"linkedExternalProjectsSettings\">\n      <GradleProjectSettings>\n        <option name=\"testRunner\" value=\"PLATFORM\" />\n        <option name=\"distributionType\" value=\"DEFAULT_WRAPPED\" />\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\n        <option name=\"gradleJvm\" value=\"1.8\" />\n        <option name=\"modules\">\n          <set>\n            <option value=\"$PROJECT_DIR$\" />\n            <option value=\"$PROJECT_DIR$/app\" />\n          </set>\n        </option>\n        <option name=\"resolveModulePerSourceSet\" value=\"false\" />\n      </GradleProjectSettings>\n    </option>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/gradle.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ .idea/gradle.xml	(date 1602849414000)
+@@ -15,6 +15,7 @@
+           </set>
+         </option>
+         <option name="resolveModulePerSourceSet" value="false" />
++        <option name="useQualifiedModuleNames" value="true" />
+       </GradleProjectSettings>
+     </option>
+   </component>
+Index: app/src/main/java/esprims/gi2/chengappcitizen/activities/SettingsActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/activities/SettingsActivity.kt	(date 1602710828000)
++++ app/src/main/java/esprims/gi2/chengappcitizen/activities/SettingsActivity.kt	(date 1602710828000)
+@@ -0,0 +1,25 @@
++package esprims.gi2.chengappcitizen.activities
++
++import android.os.Bundle
++import androidx.appcompat.app.AppCompatActivity
++import androidx.preference.PreferenceFragmentCompat
++import esprims.gi2.chengappcitizen.R
++
++class SettingsActivity : AppCompatActivity() {
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.settings_activity)
++        supportFragmentManager
++            .beginTransaction()
++            .replace(R.id.settings, SettingsFragment())
++            .commit()
++        supportActionBar?.setDisplayHomeAsUpEnabled(true)
++    }
++
++    class SettingsFragment : PreferenceFragmentCompat() {
++        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
++            setPreferencesFromResource(R.xml.root_preferences, rootKey)
++        }
++    }
++}
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_report.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".activities.ReportActivity\">\n\n    <TextView\n        android:id=\"@+id/text_desc\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/description\"\n        android:textColor=\"#0C0808\"\n        android:visibility=\"invisible\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.825\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.453\" />\n\n    <RadioGroup\n        android:id=\"@+id/radioGroup\"\n        android:layout_width=\"196dp\"\n        android:layout_height=\"99dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.776\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.318\">\n\n        <RadioButton\n            android:id=\"@+id/radioParking\"\n            android:layout_width=\"match_parent\"\n            android:layout_height=\"wrap_content\"\n            android:text=\"@string/parking\" />\n\n        <RadioButton\n            android:id=\"@+id/radioaccident\"\n            android:layout_width=\"match_parent\"\n            android:layout_height=\"wrap_content\"\n            android:text=\"@string/accident\" />\n\n\n        <RadioButton\n            android:id=\"@+id/radioOther\"\n            android:layout_width=\"match_parent\"\n            android:layout_height=\"wrap_content\"\n            android:text=\"@string/other\" />\n    </RadioGroup>\n\n    <TextView\n        android:id=\"@+id/type_text\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/typeText\"\n        android:textColor=\"#0C0808\"\n        android:textSize=\"18sp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.855\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.22\" />\n\n    <ImageView\n        android:id=\"@+id/photoView\"\n        android:layout_width=\"181dp\"\n        android:layout_height=\"153dp\"\n        android:visibility=\"invisible\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.786\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.782\" />\n\n    <TextView\n        android:id=\"@+id/loginText\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"@string/formText\"\n        android:textColor=\"@android:color/black\"\n        android:textSize=\"@dimen/logPassDim\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.828\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.075\" />\n\n    <EditText\n        android:id=\"@+id/descriptionId\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:ems=\"10\"\n        android:gravity=\"start|top\"\n        android:inputType=\"textMultiLine\"\n        android:visibility=\"invisible\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.776\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.533\" />\n\n    <Button\n        android:id=\"@+id/photo_btn\"\n        android:layout_width=\"132dp\"\n        android:layout_height=\"36dp\"\n        android:background=\"@drawable/button_round\"\n        android:drawableStart=\"@drawable/photo\"\n        android:drawableLeft=\"@drawable/photo\"\n        android:drawablePadding=\"10dp\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        android:text=\"@string/photo\"\n        android:textSize=\"20sp\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.878\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.955\" />\n\n    <Button\n        android:id=\"@+id/sendReportId\"\n        android:layout_width=\"149dp\"\n        android:layout_height=\"35dp\"\n        android:background=\"@drawable/button_round\"\n        android:drawableStart=\"@drawable/send\"\n        android:drawableLeft=\"@drawable/send\"\n        android:drawablePadding=\"10dp\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        android:text=\"@string/sendReport\"\n        android:textSize=\"20sp\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.125\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.955\" />\n\n    <ImageView\n        android:id=\"@+id/error_icon\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:src=\"@drawable/ic_error\"\n        android:visibility=\"invisible\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.524\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.950\" />\n\n    <ImageView\n        android:id=\"@+id/done_icon\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:src=\"@drawable/ic_done\"\n        android:visibility=\"invisible\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.524\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.95\" />\n\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_report.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/res/layout/activity_report.xml	(date 1602858992000)
+@@ -6,6 +6,16 @@
+     android:layout_height="match_parent"
+     tools:context=".activities.ReportActivity">
+ 
++    <LinearLayout
++        android:layout_width="match_parent"
++        android:layout_height="match_parent">
++
++        <FrameLayout
++            android:id="@+id/settings"
++            android:layout_width="match_parent"
++            android:layout_height="match_parent" />
++    </LinearLayout>
++
+     <TextView
+         android:id="@+id/text_desc"
+         android:layout_width="wrap_content"
+@@ -70,6 +80,7 @@
+         android:layout_width="181dp"
+         android:layout_height="153dp"
+         android:visibility="invisible"
++        android:background="@drawable/edit_round"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintHorizontal_bias="0.786"
+Index: app/src/main/res/layout/activity_register.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".activities.RegisterActivity\">\n\n    <EditText\n        android:id=\"@+id/signUpEmailId\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:autofillHints=\"\"\n        android:background=\"@drawable/edit_round\"\n        android:ems=\"10\"\n        android:hint=\"@string/email_hint\"\n        android:inputType=\"textEmailAddress\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.195\" />\n\n    <EditText\n        android:id=\"@+id/signUpNameId\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:autofillHints=\"\"\n        android:background=\"@drawable/edit_round\"\n        android:drawableStart=\"@drawable/user\"\n        android:drawableLeft=\"@drawable/user\"\n        android:drawablePadding=\"10dp\"\n        android:ems=\"10\"\n        android:hint=\"@string/login_hint\"\n        android:inputType=\"textPersonName\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.08\" />\n\n    <EditText\n        android:id=\"@+id/signUpPassId\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:autofillHints=\"\"\n        android:background=\"@drawable/edit_round\"\n        android:drawableStart=\"@drawable/password\"\n        android:drawableLeft=\"@drawable/password\"\n        android:drawablePadding=\"10dp\"\n        android:ems=\"10\"\n        android:hint=\"@string/password_hint\"\n        android:inputType=\"textPassword\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.317\" />\n\n    <EditText\n        android:id=\"@+id/repeatPassId\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:autofillHints=\"\"\n        android:background=\"@drawable/edit_round\"\n        android:drawableStart=\"@drawable/password\"\n        android:drawableLeft=\"@drawable/password\"\n        android:drawablePadding=\"10dp\"\n        android:ems=\"10\"\n        android:hint=\"@string/repeat_password_hint\"\n        android:inputType=\"textPassword\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.621\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.436\" />\n\n    <Button\n        android:id=\"@+id/signUpComfirm_btn\"\n        android:layout_width=\"300dp\"\n        android:layout_height=\"50dp\"\n        android:background=\"@drawable/button_round\"\n        android:drawableStart=\"@drawable/send\"\n        android:drawableLeft=\"@drawable/send\"\n        android:drawablePadding=\"10dp\"\n        android:paddingLeft=\"10dp\"\n        android:paddingRight=\"10dp\"\n        android:text=\"@string/signUp\"\n        android:textSize=\"20sp\"\n        android:textStyle=\"bold\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.495\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.675\" />\n\n    <ImageView\n        android:id=\"@+id/show_pass1\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:layout_margin=\"10dp\"\n        android:contentDescription=\"@string/show_hide_button\"\n        android:src=\"@drawable/show_pass\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.041\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.318\" />\n\n    <ImageView\n        android:id=\"@+id/show_pass2\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:layout_margin=\"10dp\"\n        android:contentDescription=\"@string/show_hide_button\"\n        android:src=\"@drawable/show_pass\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.041\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.439\" />\n\n    <LinearLayout\n        android:id=\"@+id/checkbox_Layout\"\n        android:layout_width=\"216dp\"\n        android:layout_height=\"34dp\"\n        android:orientation=\"horizontal\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.497\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.548\">\n\n        <CheckBox\n            android:id=\"@+id/accept_terms_and_conditions\"\n            android:layout_width=\"wrap_content\"\n            android:layout_height=\"wrap_content\" />\n\n        <TextView\n            android:id=\"@+id/Terms_and_condition_text\"\n            android:layout_width=\"179dp\"\n            android:layout_height=\"26dp\"\n            android:text=\"@string/terms\"\n            android:textColor=\"#000000\"\n            android:textSize=\"16sp\" />\n\n    </LinearLayout>\n\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_register.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/res/layout/activity_register.xml	(date 1602712848000)
+@@ -6,6 +6,8 @@
+     android:layout_height="match_parent"
+     tools:context=".activities.RegisterActivity">
+ 
++
++
+     <EditText
+         android:id="@+id/signUpEmailId"
+         android:layout_width="300dp"
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\n    <string name=\"app_name\">ChengAppCitizen</string>\n    <string name=\"login\">تسجيل الدخول</string>\n    <string name=\"logout\">Log Out</string>\n    <string name=\"signup\">إنشاء حساب</string>\n    <string name=\"userName\">اسم المستخدم</string>\n    <string name=\"email\">البريد الإلكتروني</string>\n    <string name=\"password\">كلمة السر</string>\n    <string name=\"logo_desc\">this is the app logo (Towing truck)</string>\n    <string name=\"exit\">خروج</string>\n    <string name=\"password_hint\">أدخل كلمة السر</string>\n    <string name=\"login_hint\">أدخل اسم المستخدم</string>\n    <string name=\"show_hide_button\">show/hide button</string>\n    <string name=\"welcome_text\">مرحبا بك %s</string>\n    <string name=\"signUp\">إنشاء حساب</string>\n    <string name=\"email_hint\">أدخل البريد الإلكتروني</string>\n    <string name=\"repeat_password_hint\">إعادة إدخال كلمة السر</string>\n    <string name=\"cin_hint\">أدخل رقم بطاقة التعريف الوطنية</string>\n    <string name=\"phone_hint\">أدخل رقم الهاتف الجوال</string>\n    <string name=\"matricule_hint\"> أدخل رقم لوحة السيارة (999TN9999)</string>\n    <string name=\"terms\">أقبل بأحكام و شروط التطبيق </string>\n    <string name=\"registerText\">ليس لديك حساب ? إنشئ حسابك الأن  </string>\n    <string name=\"btnReport\">تبليغ على مخالفة</string>\n    <string name=\"listReports\">لائحة البلاغات السابقة </string>\n    <string name=\"formText\">إبلاغ على مخالفة</string>\n    <string name=\"typeText\">نوعية المخالفة</string>\n    <string name=\"accident\">حادت</string>\n    <string name=\"parking\">توقف مخالف للقانون</string>\n    <string name=\"other\">نوع أخر</string>\n    <string name=\"photo\">خذ صورة</string>\n    <string name=\"description\">حاول تفسير نوعية المخالفة</string>\n    <string name=\"desription_hint\">حاول تفسير نوعية المخالفة</string>\n    <string name=\"sendReport\">إرسال البلاغ</string>\n    <string name=\"profile\">تحديث الحساب</string>\n\n\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/strings.xml	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/res/values/strings.xml	(date 1602710538000)
+@@ -32,6 +32,22 @@
+     <string name="desription_hint">حاول تفسير نوعية المخالفة</string>
+     <string name="sendReport">إرسال البلاغ</string>
+     <string name="profile">تحديث الحساب</string>
++    <string name="title_activity_settings">SettingsActivity</string>
++
++    <!-- Preference Titles -->
++    <string name="messages_header">Messages</string>
++    <string name="sync_header">Sync</string>
++
++    <!-- Messages Preferences -->
++    <string name="signature_title">Your signature</string>
++    <string name="reply_title">Default reply action</string>
++
++    <!-- Sync Preferences -->
++    <string name="sync_title">Sync email periodically</string>
++    <string name="attachment_title">Download incoming attachments</string>
++    <string name="attachment_summary_on">Automatically download attachments for incoming emails
++    </string>
++    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+ 
+ 
+ </resources>
+\ No newline at end of file
+Index: app/src/main/java/esprims/gi2/chengappcitizen/activities/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.activities\n\nimport android.content.Intent\nimport android.location.LocationManager\nimport androidx.appcompat.app.AppCompatActivity\nimport android.os.Bundle\nimport android.widget.ArrayAdapter\nimport esprims.gi2.chengappcitizen.R\nimport esprims.gi2.chengappcitizen.classes.Photo\nimport esprims.gi2.chengappcitizen.classes.PhotoManager\n\nimport kotlinx.android.synthetic.main.activity_main.*\n\nclass MainActivity : AppCompatActivity() {\n\n    private val photoManager: PhotoManager = PhotoManager(this)\n    private var list : List<Photo> = ArrayList()\n\n\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_main)\n\n        //fill the list from database\n        list = this.refresh()\n\n        report_btn.setOnClickListener{\n\n            intent = Intent(applicationContext,ReportActivity::class.java)\n            startActivity(intent)\n\n\n        }\n\n    }\n    private fun refresh(): List<Photo> {\n\n        photoManager.openReadDB()\n        list=photoManager.getPhoto()\n        list_id.adapter = ArrayAdapter<Photo>(this,android.R.layout.simple_list_item_1,list)\n\n        photoManager.closeDB()\n        return list\n\n    }\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/activities/MainActivity.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/activities/MainActivity.kt	(date 1602753416000)
+@@ -5,6 +5,7 @@
+ import androidx.appcompat.app.AppCompatActivity
+ import android.os.Bundle
+ import android.widget.ArrayAdapter
++import com.google.android.material.navigation.NavigationView
+ import esprims.gi2.chengappcitizen.R
+ import esprims.gi2.chengappcitizen.classes.Photo
+ import esprims.gi2.chengappcitizen.classes.PhotoManager
+@@ -38,6 +39,7 @@
+ 
+         photoManager.openReadDB()
+         list=photoManager.getPhoto()
++
+         list_id.adapter = ArrayAdapter<Photo>(this,android.R.layout.simple_list_item_1,list)
+ 
+         photoManager.closeDB()
+Index: app/src/main/res/values/arrays.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/arrays.xml	(date 1602710538000)
++++ app/src/main/res/values/arrays.xml	(date 1602710538000)
+@@ -0,0 +1,12 @@
++<resources>
++    <!-- Reply Preference -->
++    <string-array name="reply_entries">
++        <item>Reply</item>
++        <item>Reply to all</item>
++    </string-array>
++
++    <string-array name="reply_values">
++        <item>reply</item>
++        <item>reply_all</item>
++    </string-array>
++</resources>
+\ No newline at end of file
+Index: app/src/main/java/esprims/gi2/chengappcitizen/activities/WelcomeActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package esprims.gi2.chengappcitizen.activities\n\nimport android.app.Activity\nimport android.content.Intent\nimport androidx.appcompat.app.AppCompatActivity\nimport android.os.Bundle\nimport android.preference.PreferenceManager\nimport android.widget.Toast\nimport esprims.gi2.chengappcitizen.R\nimport esprims.gi2.chengappcitizen.adapters.SignInAdapter\nimport esprims.gi2.chengappcitizen.models.SignInRequest\nimport esprims.gi2.chengappcitizen.models.SignInResponse\nimport esprims.gi2.chengappcitizen.preference.AppPreference\nimport esprims.gi2.chengappcitizen.rest.ApiClient\nimport kotlinx.android.synthetic.main.activity_welcome.*\nimport kotlinx.coroutines.CoroutineScope\nimport kotlinx.coroutines.Dispatchers\nimport kotlinx.coroutines.MainScope\nimport kotlinx.coroutines.launch\nimport retrofit2.Call\nimport retrofit2.Response\nimport javax.security.auth.callback.Callback\n\nclass WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_welcome)\n\n        //fill the username field if the user completed signing up\n        if (intent.getStringExtra(\"username2\")!=null){\n            val username2 = intent.getStringExtra(\"username2\")\n            loginId.setText(username2)\n            Toast.makeText(applicationContext, \"الرجاء إدخال كلمة السر\",Toast.LENGTH_LONG).show()\n        }\n\n\n        AppPreference.init(this)\n\n        //test if user has logged before if so --> direct to Main activity\n        if (AppPreference.isLogin){\n\n            intent =Intent(applicationContext,MainActivity::class.java)\n            intent.putExtra(\"id\",AppPreference.id)\n            startActivity(intent)\n        }\n\n        //launch signUp Activity\n        signUp_btn.setOnClickListener{\n            intent=Intent(applicationContext,RegisterActivity::class.java)\n            startActivity(intent)\n        }\n\n        //Log in to application\n        signIn_btn.setOnClickListener {\n\n            val username = loginId.text.toString()\n            val password = passId.text.toString()\n\n            val signInRequest = SignInRequest(username,password)\n            launch(Dispatchers.Main){\n                try {\n                    signIn(signInRequest){\n                        if (it != null) {\n\n                            Toast.makeText(applicationContext, \"تم تسجيل الدخول بنجاح\",Toast.LENGTH_LONG).show()\n\n                            if (username.isNotBlank() && password.isNotBlank()) {\n                                AppPreference.isLogin = true\n                                AppPreference.username = username\n                                AppPreference.password = password\n                                AppPreference.id = it.id\n                            }\n                            intent = Intent(applicationContext, MainActivity::class.java)\n                            intent.putExtra(\"idFirstLogIn\",username)\n                            intent.putExtra(\"id\",it.id)\n                            startActivity(intent)\n\n                        } else {\n\n                            Toast.makeText(applicationContext, \"الرجاء التثبت من المعطيات\",Toast.LENGTH_LONG).show()\n\n                        }\n                    }\n\n                }catch(e: Exception){\n                    Toast.makeText(applicationContext,\n                        \"Error Occurred: ${e.message}\",\n                        Toast.LENGTH_LONG).show()\n                }\n            }\n        }\n\n    }\n\n  /*  override fun OnActivityResult(requestCode: Int, resultCode: Int,data:Intent?){\n\n        super.onActivityResult(requestCode,resultCode,data)\n        when(requestCode){\n            1->\n                when(resultCode){\n                    Activity.RESULT_OK ->{\n                        val username= data?.getStringExtra(\"username\")\n                        loginId.setText(username)\n                        Toast.makeText(applicationContext, \"الرجاء إدخال كلمة السر\",Toast.LENGTH_LONG).show()\n\n                    }\n                    Activity.RESULT_CANCELED ->  Toast.makeText(applicationContext, \"Action Annulé\",Toast.LENGTH_LONG).show()\n\n                }\n        }\n    }*/\n    private fun signIn(userData: SignInRequest, onResult: (SignInResponse?) -> Unit){\n        val retrofit = SignInAdapter.buildService(ApiClient::class.java)\n        retrofit.signIn(userData).enqueue(\n            object : retrofit2.Callback<SignInResponse> {\n                override fun onFailure(call: Call<SignInResponse>, t: Throwable) {\n                    onResult(null)\n                }\n\n                override fun onResponse(\n                    call: Call<SignInResponse>,\n                    response: Response<SignInResponse>\n                ) {\n                    val signedUser = response.body()\n                    onResult(signedUser)\n                }\n\n\n            }\n        )\n    }\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/activities/WelcomeActivity.kt	(revision b06c5f473c9cce4ca696c612ad3bd5a32612a738)
++++ app/src/main/java/esprims/gi2/chengappcitizen/activities/WelcomeActivity.kt	(date 1602712848000)
+@@ -6,6 +6,7 @@
+ import android.os.Bundle
+ import android.preference.PreferenceManager
+ import android.widget.Toast
++import androidx.preference.PreferenceFragmentCompat
+ import esprims.gi2.chengappcitizen.R
+ import esprims.gi2.chengappcitizen.adapters.SignInAdapter
+ import esprims.gi2.chengappcitizen.models.SignInRequest
+@@ -93,6 +94,7 @@
+ 
+     }
+ 
++
+   /*  override fun OnActivityResult(requestCode: Int, resultCode: Int,data:Intent?){
+ 
+         super.onActivityResult(requestCode,resultCode,data)
+Index: app/src/main/java/esprims/gi2/chengappcitizen/classes/ReportListAdaper.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/esprims/gi2/chengappcitizen/classes/ReportListAdaper.kt	(date 1602853591000)
++++ app/src/main/java/esprims/gi2/chengappcitizen/classes/ReportListAdaper.kt	(date 1602853591000)
+@@ -0,0 +1,12 @@
++package esprims.gi2.chengappcitizen.classes
++
++import android.content.Context
++import android.widget.ArrayAdapter
++import android.widget.BaseAdapter
++
++class ReportListAdapter(context: Context) {
++
++    private var reportList:ArrayList<Photo> = ArrayList()
++
++
++}
+\ No newline at end of file
