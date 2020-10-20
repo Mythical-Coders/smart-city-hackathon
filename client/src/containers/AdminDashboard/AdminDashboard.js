@@ -15,6 +15,7 @@ import ProfileList from "./Content/ProfileList";
 import ReportList from "./Content/ReportList";
 import ReportPlaceList from "./Content/ReportPlaceList";
 import ImageList from "./Content/ImageList";
+import ImageDetail from "./Content/ImageDetail";
 
 
 const drawerWidth = 256;
@@ -56,6 +57,7 @@ function AdminDashboard(props) {
               <Route path={"/admin_dashboard/reports"} exact component={ReportList} />
               <Route path={"/admin_dashboard/reportPlaces"} exact component={ReportPlaceList} />
               <Route path={"/admin_dashboard/images"} exact component={ImageList} />
+              <Route path={"/agent_dashboard/images/:id"}  component={ImageDetail} />
 
               <Redirect to={"/admin_dashboard/users"} />
             </Switch>

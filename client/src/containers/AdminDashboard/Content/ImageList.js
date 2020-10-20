@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  imageDeleteData,
-  imageGetAll,
-} from "../../../actions/ImageActions";
+import { useHistory } from "react-router-dom";
+import { imageDeleteData, imageGetAll } from "../../../actions/ImageActions";
 import MaterialTable from "material-table";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
@@ -20,13 +18,19 @@ import NavPills from "../../../components/NavPills/NavPills.js";
 import ImageUploader from "../../imageUpload/ImageUploader";
 
 function ImageList() {
+  const history = useHistory();
   const dispatch = useDispatch();
   const imageData = useSelector((state) => state.image);
   const [alert, setAlert] = useState(null);
   const [alertDelete, setAlertDelete] = useState(null);
   const [state, setState] = useState({
     columns: [
-      // { title: "الصورة", field: "image", align: "right" },
+      {
+        title: "تاريخ الإنشاء",
+        field: "createDate",
+        align: "right",
+        defaultSort: "desc",
+      },
       {
         title: "العنوان",
         field: "title",
@@ -117,6 +121,9 @@ function ImageList() {
                     icons={tableIcons}
                     data={state.data}
                     localization={localization()}
+                    onRowClick={(e, rowData) =>
+                      history.push("/agent_dashboard/images/" + rowData.id)
+                    }
                     editable={{
                       onRowDelete: (oldData) =>
                         new Promise((resolve) => {
@@ -131,7 +138,11 @@ function ImageList() {
             {
               tabButton: "إضافة الصور",
               tabIcon: Schedule,
-              tabContent: <><ImageUploader /> </>,
+              tabContent: (
+                <>
+                  <ImageUploader />{" "}
+                </>
+              ),
             },
           ]}
         />
