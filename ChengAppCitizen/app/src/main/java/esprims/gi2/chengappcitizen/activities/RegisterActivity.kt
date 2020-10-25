@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.adapters.SignUpAdapter
 import esprims.gi2.chengappcitizen.models.SignUpRequest
@@ -35,21 +36,21 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope by MainScope(){
         var mIsShowPass1 = false
         var mIsShowPass2 = false
 
+
+
         //password field
         show_pass1.setOnClickListener {
             mIsShowPass1 = !mIsShowPass1
             showPassword(mIsShowPass1)
         }
-
-        //repeat password field
+        // repeat password field
         show_pass2.setOnClickListener {
             mIsShowPass2 = !mIsShowPass2
-            showPassword(mIsShowPass2)
+            showRepeatPassword(mIsShowPass2)
         }
 
-        //
-
-
+        showPassword(mIsShowPass1)
+        showRepeatPassword(mIsShowPass2)
 
 
         signUpComfirm_btn.setOnClickListener {
@@ -146,15 +147,26 @@ class RegisterActivity : AppCompatActivity(), CoroutineScope by MainScope(){
     private fun showPassword(isShow:Boolean){
         if(isShow){
             signUpPassId.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            show_pass.setImageResource(R.drawable.hide_pass)
+            show_pass1.setImageResource(R.drawable.hide_pass)
         }
         else{
             signUpPassId.transformationMethod =PasswordTransformationMethod.getInstance()
-            show_pass.setImageResource(R.drawable.show_pass)
+            show_pass1.setImageResource(R.drawable.show_pass)
         }
         signUpPassId.setSelection(signUpPassId.text.toString().length   )
     }
 
+    private fun showRepeatPassword(isShow:Boolean){
+        if(isShow){
+            repeatPassId.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            show_pass2.setImageResource(R.drawable.hide_pass)
+        }
+        else{
+            repeatPassId.transformationMethod =PasswordTransformationMethod.getInstance()
+            show_pass2.setImageResource(R.drawable.show_pass)
+        }
+        repeatPassId.setSelection(repeatPassId.text.toString().length   )
+    }
     private fun signUp(signUpRequest: SignUpRequest, onResult: (SignUpResponse?)->Unit){
         val retrofit = SignUpAdapter.buildService(ApiClient::class.java)
         retrofit.signUp(signUpRequest).enqueue(

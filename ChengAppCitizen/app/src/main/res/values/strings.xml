@@ -1,4 +1,6 @@
 <resources>
+
+    <!-- Sign UP/Sign In Titles -->
     <string name="app_name">ChengAppCitizen</string>
     <string name="login">تسجيل الدخول</string>
     <string name="logout">Log Out</string>
@@ -15,11 +17,19 @@
     <string name="signUp">إنشاء حساب</string>
     <string name="email_hint">أدخل البريد الإلكتروني</string>
     <string name="repeat_password_hint">إعادة إدخال كلمة السر</string>
-    <string name="cin_hint">أدخل رقم بطاقة التعريف الوطنية</string>
-    <string name="phone_hint">أدخل رقم الهاتف الجوال</string>
-    <string name="matricule_hint"> أدخل رقم لوحة السيارة (999TN9999)</string>
     <string name="terms">أقبل بأحكام و شروط التطبيق </string>
     <string name="registerText">ليس لديك حساب ? إنشئ حسابك الأن  </string>
+
+    <!-- Profile Titles -->
+    <string name="cin_hint">أدخل رقم بطاقة التعريف الوطنية(8 أرقام)</string>
+    <string name="phone_hint">أدخل رقم الهاتف الجوال(8 أرقام)</string>
+    <string name="matricule_hint"> أدخل رقم لوحة السيارة (999TN9999)</string>
+    <string name="matricule_Text">رقم لوحة السيارة</string>
+    <string name="phone_text">رقم الهاتف الجوال</string>
+    <string name="cin_text">رقم بطاقة التعريف الوطنية</string>
+
+
+    <!-- Report Titles -->
     <string name="btnReport">تبليغ على مخالفة</string>
     <string name="listReports">لائحة البلاغات السابقة </string>
     <string name="formText">إبلاغ على مخالفة</string>

@@ -82,4 +82,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.19" />
+
+    <TextView
+        android:id="@+id/cinText"
+        android:layout_width="160dp"
+        android:layout_height="29dp"
+        android:text="@string/cin_text"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="@dimen/logPassDim"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.878"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.124" />
+
+    <TextView
+        android:id="@+id/phone_text"
+        android:layout_width="156dp"
+        android:layout_height="28dp"
+        android:text="@string/phone_text"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="@dimen/logPassDim"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.874"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.317" />
+
+    <TextView
+        android:id="@+id/matricule_text"
+        android:layout_width="156dp"
+        android:layout_height="28dp"
+        android:text="@string/matricule_Text"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="@dimen/logPassDim"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.874"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 </androidx.constraintlayout.widget.ConstraintLayout>

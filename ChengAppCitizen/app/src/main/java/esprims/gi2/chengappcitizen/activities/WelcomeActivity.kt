@@ -5,6 +5,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
 import androidx.preference.PreferenceFragmentCompat
 import esprims.gi2.chengappcitizen.R
@@ -27,6 +29,16 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
+
+        //show or hide password
+        var mIsShowPass = false
+
+        show_pass.setOnClickListener {
+            mIsShowPass = !mIsShowPass
+            showPassword(mIsShowPass)
+        }
+        showPassword(mIsShowPass)
+
 
         //fill the username field if the user completed signing up
         if (intent.getStringExtra("username2")!=null){
@@ -51,6 +63,9 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             intent=Intent(applicationContext,RegisterActivity::class.java)
             startActivity(intent)
         }
+
+
+
 
         //Log in to application
         signIn_btn.setOnClickListener {
@@ -131,6 +146,17 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
             }
         )
+    }
+
+    private fun showPassword(isShow: Boolean){
+        if(isShow){
+            passId.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            show_pass.setImageResource(R.drawable.hide_pass)
+        }else{
+            passId.transformationMethod = PasswordTransformationMethod.getInstance()
+            show_pass.setImageResource(R.drawable.show_pass)
+        }
+        passId.setSelection(passId.text.toString().length)
     }
 
 }
