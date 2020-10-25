@@ -1,5 +1,6 @@
 package esprims.gi2.chengappcitizen.activities
 
+import android.app.ActionBar
 import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.adapters.SignInAdapter
 import esprims.gi2.chengappcitizen.models.SignInRequest
@@ -26,9 +28,15 @@ import javax.security.auth.callback.Callback
 
 class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
+
+
+
 
         //show or hide password
         var mIsShowPass = false
@@ -159,4 +167,5 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         passId.setSelection(passId.text.toString().length)
     }
 
-}
+
+    }

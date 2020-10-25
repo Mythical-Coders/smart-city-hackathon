@@ -46,6 +46,15 @@
     <string name="backList">الرجوع</string>
     <string name="positionVerif"> position verified </string>
 
+    <!-- bottom nav bar -->
+    <string name="home">إستقبال</string>
+    <string name="aboutUs">تعرف على التطبيق</string>
+    <string name="logOut">الخروج</string>
+
+    <!-- About us activity -->
+    <string name="aboutUsText">تعرف المزيد</string>
+    <string name="multiLineText">تعرف المزيد (to be added later on)</string>
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
@@ -60,6 +69,7 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
 
 
 </resources>

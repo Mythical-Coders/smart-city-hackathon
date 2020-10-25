@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.adapters.Mapadapter
 import esprims.gi2.chengappcitizen.adapters.PhotoAdapter
@@ -66,6 +67,12 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report)
+
+        //initialize bottom nav bar
+        var toolbar = supportActionBar!!
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
 
 
         //hide or show view depending radio checks
@@ -227,20 +234,25 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     //convert image as a byteArray
                     val imageByte: ByteArray = convert.getbytes(imageBitMap)
                     //add title to db as the type of the report
-                    when {
+                    type = when {
                         radioParking.isChecked -> {
-                            type = "نوعية المخالفة: توقف مخالف للقانون"
+                            "نوعية المخالفة: توقف مخالف للقانون"
                         }
 
                         radioOther.isChecked -> {
 
-                            type = descriptionId.text.toString() + "نوعية المخالفة:"
+                            descriptionId.text.toString() + "نوعية المخالفة:"
                         }
+                        else -> "noValue"
                     }
-                    val photo = Photo(type,imageByte) //add typeReportLater
-                    photoManager.openWriteDB()
-                    photoManager.addPhoto(photo)
-                    photoManager.closeDB()
+                    if (type!="noValue") {
+
+                        val photo = Photo(type, imageByte) //add typeReportLater
+                        photoManager.openWriteDB()
+                        photoManager.addPhoto(photo)
+                        photoManager.closeDB()
+                    }
+
                 } else {
                     Toast.makeText(applicationContext, "did not read intent", Toast.LENGTH_LONG).show()
                 }
@@ -480,6 +492,33 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         )
     }
+    private val mOnNavigationItemSelectedListener =
+        BottomNavigationView.OnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.about_btn -> {
+                    intent = Intent(applicationContext,AboutUsActivity::class.java)
+                    startActivity(intent)
+
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.home_btn -> {
+                    intent = Intent(applicationContext,MainActivity::class.java)
+                    startActivity(intent)
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.logout_btn -> {
+                    intent = Intent(applicationContext,WelcomeActivity::class.java)
+                    AppPreference.isLogin = false
+                    AppPreference.password = ""
+                    AppPreference.username = ""
+                    startActivity(intent)
+                    return@OnNavigationItemSelectedListener true
+                }
+                else ->{
+                    return@OnNavigationItemSelectedListener true
+                }
+            }
+        }
 
 }
 
