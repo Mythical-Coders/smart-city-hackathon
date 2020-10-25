@@ -15,7 +15,7 @@ class PhotoDbHelper(context : Context?) : SQLiteOpenHelper(context , "Upload_Pho
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_PHOTO_TABLE=("CREATE TABLE "
                 + THE_TABLE+" ("
-                + COL_TITLE+" TEXT PRIMARY KEY,"
+                + COL_TITLE+" TEXT NOT NULL,"
                 + COL_IMAGE+" BLOB NOT NULL"+")")
         db?.execSQL(CREATE_PHOTO_TABLE)
     }

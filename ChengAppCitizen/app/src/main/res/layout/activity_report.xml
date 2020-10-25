@@ -24,8 +24,8 @@
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="196dp"
-        android:layout_height="99dp"
+        android:layout_width="192dp"
+        android:layout_height="78dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.776"
@@ -38,13 +38,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/parking" />
-
-        <RadioButton
-            android:id="@+id/radioaccident"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/accident" />
-
 
         <RadioButton
             android:id="@+id/radioOther"

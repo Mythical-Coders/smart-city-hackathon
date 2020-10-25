@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+
+        android:id="@+id/relativeId"
+        android:layout_width="match_parent"
+        android:layout_height="173dp">
+
+        <ImageView
+            android:id="@+id/photoId"
+            android:layout_width="117dp"
+            android:layout_height="128dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginEnd="274dp"
+            android:layout_marginRight="274dp"
+            android:layout_marginBottom="23dp" />
+
+        <TextView
+            android:id="@+id/typeTextId"
+            android:layout_width="207dp"
+            android:layout_height="74dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="163dp"
+            android:layout_marginLeft="163dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="41dp"
+            android:layout_marginRight="41dp"
+            android:layout_marginBottom="49dp"
+            android:gravity="center"
+            android:text="TextView"
+            android:textColor="#885C1B"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+</LinearLayout>

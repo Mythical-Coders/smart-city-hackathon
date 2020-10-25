@@ -9,13 +9,14 @@ import com.google.android.material.navigation.NavigationView
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.classes.Photo
 import esprims.gi2.chengappcitizen.classes.PhotoManager
+import esprims.gi2.chengappcitizen.classes.ReportListAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity()  {
 
     private val photoManager: PhotoManager = PhotoManager(this)
-    private var list : List<Photo> = ArrayList()
+    private var list : ArrayList<Photo> = ArrayList()
 
 
 
@@ -35,12 +36,13 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    private fun refresh(): List<Photo> {
+    private fun refresh(): ArrayList<Photo> {
 
         photoManager.openReadDB()
-        list=photoManager.getPhoto()
+        list= photoManager.getPhoto()
 
-        list_id.adapter = ArrayAdapter<Photo>(this,android.R.layout.simple_list_item_1,list)
+        reportList.adapter = ReportListAdapter(applicationContext,list)
+        //list_id.adapter = ArrayAdapter<Photo>(this,android.R.layout.simple_list_item_1,list)
 
         photoManager.closeDB()
         return list

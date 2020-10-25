@@ -29,7 +29,7 @@ class PhotoManager(context:Context) {
         contentValues.put(PhotoDbHelper.COL_IMAGE,photo.image)
         return photoDbHelper.writableDatabase.insert(PhotoDbHelper.THE_TABLE,null, contentValues)
     }
-    fun getPhoto():List<Photo>{
+    fun getPhoto():ArrayList<Photo>{
 
         //declare variables
         val listPhoto:ArrayList<Photo> = ArrayList()

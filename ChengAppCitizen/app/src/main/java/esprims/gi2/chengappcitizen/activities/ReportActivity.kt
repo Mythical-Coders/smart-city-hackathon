@@ -2,6 +2,7 @@ package esprims.gi2.chengappcitizen.activities
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -20,6 +21,7 @@ import esprims.gi2.chengappcitizen.adapters.Mapadapter
 import esprims.gi2.chengappcitizen.adapters.PhotoAdapter
 import esprims.gi2.chengappcitizen.adapters.ReportAdapter
 import esprims.gi2.chengappcitizen.classes.DbBitmapUtility
+import esprims.gi2.chengappcitizen.classes.Photo
 import esprims.gi2.chengappcitizen.classes.PhotoManager
 import esprims.gi2.chengappcitizen.models.*
 import esprims.gi2.chengappcitizen.preference.AppPreference
@@ -125,9 +127,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 radioParking.isChecked -> {
                     type = "illegal Parking"
                 }
-                radioaccident.isChecked -> {
-                    type = "accident"
-                }
+
                 radioOther.isChecked -> {
 
                     type = descriptionId.text.toString()
@@ -170,8 +170,8 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                                     "تم إرسال البلاغ بنجاح",
                                     Toast.LENGTH_LONG
                                 ).show()
-                                /*setResult(Activity.RESULT_CANCELED)
-                                finish()*/
+                                setResult(Activity.RESULT_CANCELED)
+                                finish()
 
                             } else {
                                 Toast.makeText(
@@ -195,7 +195,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
 
             }
-            else{
+            else if (type !="noValue" && pressAgain == true){
                 Toast.makeText(
                     applicationContext,
                     "location registered please click again",
@@ -224,25 +224,23 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     photoView.setImageBitmap(imageBitMap)
 
 
-                    //store image in database
+                    //convert image as a byteArray
                     val imageByte: ByteArray = convert.getbytes(imageBitMap)
                     //add title to db as the type of the report
                     when {
                         radioParking.isChecked -> {
-                            type = "illegal Parking"
+                            type = "نوعية المخالفة: توقف مخالف للقانون"
                         }
-                        radioaccident.isChecked -> {
-                            type = "accident"
-                        }
+
                         radioOther.isChecked -> {
 
-                            type = descriptionId.text.toString()
+                            type = descriptionId.text.toString() + "نوعية المخالفة:"
                         }
                     }
-                    /*val photo = Photo(type,imageByte) //add typeReportLater
+                    val photo = Photo(type,imageByte) //add typeReportLater
                     photoManager.openWriteDB()
                     photoManager.addPhoto(photo)
-                    photoManager.closeDB()*/
+                    photoManager.closeDB()
                 } else {
                     Toast.makeText(applicationContext, "did not read intent", Toast.LENGTH_LONG).show()
                 }
