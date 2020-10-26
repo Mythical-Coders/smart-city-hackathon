@@ -31,7 +31,7 @@ class WelcomeActivity : AppCompatActivity() {
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_welcome)
 
-        val topAnim: Animation = AnimationUtils.loadAnimation(this,top_animation)
+        val topAnim: Animation = AnimationUtils.loadAnimation(this, top_animation)
         val botAnim: Animation = AnimationUtils.loadAnimation(this, bottom_animation)
 
         appLogo.animation = topAnim

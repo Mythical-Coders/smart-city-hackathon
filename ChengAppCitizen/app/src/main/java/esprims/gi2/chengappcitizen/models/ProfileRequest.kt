@@ -11,13 +11,4 @@ data class ProfileRequest (
 
     @SerializedName("cin")
     val cin:String
-
-
-
-
-
-
-
-
-
 )

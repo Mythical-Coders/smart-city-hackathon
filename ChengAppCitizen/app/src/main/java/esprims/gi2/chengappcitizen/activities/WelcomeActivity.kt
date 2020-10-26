@@ -8,7 +8,10 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.annotation.AnimRes
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import esprims.gi2.chengappcitizen.R
@@ -33,8 +36,23 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            this.supportActionBar!!.hide()
+        } catch (e: NullPointerException) {
+        }
         setContentView(R.layout.activity_welcome)
 
+
+        // load animation
+        val topAnim: Animation = AnimationUtils.loadAnimation(this,R.anim.top_animation)
+        val botAnim: Animation = AnimationUtils.loadAnimation(this, R.anim.bottom_animation)
+
+        //set animation
+        appLogo.animation = topAnim
+        logoBackground.animation = topAnim
+        appName.animation = topAnim
+        signUp_btn.animation = botAnim
+        signIn_btn.animation = topAnim
 
 
 

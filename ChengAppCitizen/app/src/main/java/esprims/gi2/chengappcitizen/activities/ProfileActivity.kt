@@ -21,6 +21,10 @@ import retrofit2.Response
 class ProfileActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            this.supportActionBar!!.hide()
+        } catch (e: NullPointerException) {
+        }
         setContentView(R.layout.activity_profile)
 
         val username = intent.getStringExtra("username")

@@ -66,6 +66,10 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            this.supportActionBar!!.hide()
+        } catch (e: NullPointerException) {
+        }
         setContentView(R.layout.activity_report)
 
         //initialize bottom nav bar
@@ -123,8 +127,8 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         sendReportId.setOnClickListener {
 
 
-            //update the location again when permission is granted
-            updateLocation()
+            /*//update the location again when permission is granted
+            updateLocation()*/
 
             //call the location service and get idLocation
             addPlace()

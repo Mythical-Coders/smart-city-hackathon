@@ -1,18 +1,14 @@
 package esprims.gi2.chengappcitizen.activities
 
 import android.content.Intent
-import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.classes.Photo
 import esprims.gi2.chengappcitizen.classes.PhotoManager
 import esprims.gi2.chengappcitizen.classes.ReportListAdapter
 import esprims.gi2.chengappcitizen.preference.AppPreference
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity()  {
@@ -24,6 +20,11 @@ class MainActivity : AppCompatActivity()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            this.supportActionBar!!.hide()
+        } catch (e: NullPointerException) {
+        }
+
         setContentView(R.layout.activity_main)
 
 
