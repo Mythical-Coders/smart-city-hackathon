@@ -8,7 +8,6 @@
     tools:context=".activities.WelcomeActivity">
 
 
-
     <Button
         android:id="@+id/signUp_btn"
         android:layout_width="300dp"
@@ -27,7 +26,7 @@
         app:layout_constraintHorizontal_bias="0.621"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.817" />
+        app:layout_constraintVertical_bias="0.955" />
 
     <Button
         android:id="@+id/signIn_btn"
@@ -74,10 +73,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.526"
+        app:layout_constraintHorizontal_bias="0.587"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.718" />
+        app:layout_constraintVertical_bias="0.867" />
 
     <TextView
         android:id="@+id/passwordText"
@@ -148,6 +147,47 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.148" />
 
+    <ImageView
+        android:id="@+id/logoBackground"
+        android:layout_width="201dp"
+        android:layout_height="149dp"
+        android:contentDescription="@string/logo_desc"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.774"
+        app:srcCompat="@drawable/slpash" />
+
+    <ImageView
+        android:id="@+id/appLogo"
+        android:layout_width="183dp"
+        android:layout_height="133dp"
+        android:contentDescription="@string/logo_desc"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.769"
+        app:srcCompat="@drawable/towingcar" />
+
+    <TextView
+        android:id="@+id/appName"
+        android:layout_width="212dp"
+        android:layout_height="64dp"
+        android:fontFamily="@font/bangers"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textColor="#D8A50B"
+        android:textSize="38sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.567" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

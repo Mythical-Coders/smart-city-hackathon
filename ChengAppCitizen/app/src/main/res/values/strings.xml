@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Sign UP/Sign In Titles -->
-    <string name="app_name">ChengAppCitizen</string>
+    <string name="app_name">CHENGAPP</string>
     <string name="login">تسجيل الدخول</string>
     <string name="logout">Log Out</string>
     <string name="signup">إنشاء حساب</string>
