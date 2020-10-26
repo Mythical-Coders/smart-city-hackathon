@@ -5,11 +5,8 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
-import tn.smartCities.chengApp.model.Citizen
-import tn.smartCities.chengApp.model.Impound
-import tn.smartCities.chengApp.model.User
-import tn.smartCities.chengApp.model.UserCredentials
 import retrofit2.http.Multipart
+import tn.smartCities.chengApp.model.*
 
 interface ApiClient {
     @Headers("Content-Type: application/json")
@@ -27,4 +24,6 @@ interface ApiClient {
     @POST("/api/photos/add")
     fun uploadPhoto(@Part("imageName") image: RequestBody, @Part file: MultipartBody.Part): Call<String>
 
+    @GET("/api/place/all")
+    suspend fun getPlaces(): Response<List<PlaceResponse>>
 }

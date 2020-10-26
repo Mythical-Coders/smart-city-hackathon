@@ -125,7 +125,7 @@
        app:layout_constraintStart_toStartOf="parent" />
 
    <Spinner
-       android:id="@+id/spinner2"
+       android:id="@+id/placeSpinner"
        android:layout_width="207dp"
        android:layout_height="43dp"
        android:layout_marginBottom="212dp"

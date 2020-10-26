@@ -1,7 +1,6 @@
 package tn.smartCities.chengApp.model
 
 import com.google.gson.annotations.SerializedName
-import java.time.LocalDateTime
 
 data class Impound(
 

@@ -8,12 +8,22 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import com.smartCities.chengApp.R
 import com.smartCities.chengApp.R.anim.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_welcome.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import tn.smartCities.chengApp.adapter.CitizenApiAdapter
+import tn.smartCities.chengApp.adapter.PlaceApiAdapter
+import tn.smartCities.chengApp.model.PlaceResponse
 import tn.smartCities.chengApp.preference.AppPreferences
 
 class WelcomeActivity : AppCompatActivity() {
+    lateinit var places: List<PlaceResponse>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +62,7 @@ class WelcomeActivity : AppCompatActivity() {
         exit_btn.setOnClickListener {
             finishAffinity()
         }
+
     }
 }
 

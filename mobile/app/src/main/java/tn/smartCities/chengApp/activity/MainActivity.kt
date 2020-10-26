@@ -22,6 +22,9 @@ import android.telephony.SmsManager
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
@@ -41,8 +44,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import tn.smartCities.chengApp.adapter.CitizenApiAdapter
 import tn.smartCities.chengApp.adapter.ImpoundApiAdapter
+import tn.smartCities.chengApp.adapter.PlaceApiAdapter
 import tn.smartCities.chengApp.model.Citizen
 import tn.smartCities.chengApp.model.Impound
+import tn.smartCities.chengApp.model.PlaceResponse
 import tn.smartCities.chengApp.preference.AppPreferences
 import tn.smartCities.chengApp.rest.ApiClient
 import tn.smartCities.chengApp.util.PrefUtil
@@ -83,6 +88,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         timer_id.text = getString(R.string.timer_start)
         //Citizen object to be assigned when calling the API
         var citizen: Citizen = Citizen()
+        var places: List<PlaceResponse> = listOf(PlaceResponse())
 
         //val date:Date = Date.from(Instant.now())
         val date = LocalDateTime.now()
@@ -125,7 +131,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 try {
                     val response = CitizenApiAdapter.apiClient.getCitizenByMatricule(licensePlate.text.toString())
                     citizen = response.body()!!
-                    println(citizen)
                     sendSms(response.body()?.telephone.toString(), msg)
                 } catch (e: Exception) {
                     Toast.makeText(
@@ -216,6 +221,41 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             }
         }
+        /*
+        launch(Dispatchers.Main) {
+            try {
+                val response = PlaceApiAdapter.apiClient.getPlaces()
+                places = response.body()!!
+                val listPlaces = listOf(places[0].name, places[1].name)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    applicationContext,
+                    "Error Occurred: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }*/
+
+        val placeSpinner = findViewById<Spinner>(R.id.placeSpinner)
+        var placeSelected:String = ""
+        val listPlaces = resources.getStringArray(R.array.places)
+        if (placeSpinner != null) {
+            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listPlaces)
+            placeSpinner.adapter = adapter
+
+            placeSpinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                    val typeSelected: String = listPlaces[position]
+                    placeSelected = typeSelected
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+
+                }
+            }
+        }
+
     }
 
     //When the camera intent is done, we change the visibility of either the done or error icon
@@ -318,8 +358,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val sendSMS: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (resultCode) {
-                    Activity.RESULT_OK ->
+                    Activity.RESULT_OK ->{
+                        startTimer()
                         Toasty.success(this@MainActivity, "SMS sent success!", Toasty.LENGTH_SHORT, true).show()
+                    }
                     SmsManager.RESULT_ERROR_NO_SERVICE ->
                         Toasty.error(this@MainActivity, "No active network to send SMS.", Toasty.LENGTH_SHORT, true).show()
                     SmsManager.RESULT_ERROR_RADIO_OFF ->

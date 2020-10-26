@@ -20,4 +20,9 @@
     <string name="take_front_photo">صورة أمامية</string>
     <string name="take_back_photo">صورة خلفية</string>
     <string name="send_btn_text">تسجيل مخالفة</string>
+
+    <string-array name="places">
+        <item>Fourriere 1</item>
+        <item>Fourriere 2</item>
+    </string-array>
 </resources>
