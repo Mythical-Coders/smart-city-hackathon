@@ -35,10 +35,7 @@ import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_timer.*
 import kotlinx.android.synthetic.main.custom_action_bar.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -88,7 +85,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         timer_id.text = getString(R.string.timer_start)
         //Citizen object to be assigned when calling the API
         var citizen: Citizen = Citizen()
-        var places: List<PlaceResponse> = listOf(PlaceResponse())
+        var listPlaces: List<String> = listOf("")
+
+        val placesContext = newSingleThreadContext("PlacesContext")
+        var places: List<PlaceResponse> = listOf()
 
         //val date:Date = Date.from(Instant.now())
         val date = LocalDateTime.now()
@@ -221,38 +221,41 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             }
         }
-        /*
-        launch(Dispatchers.Main) {
+
+        launch(Dispatchers.Main){
             try {
                 val response = PlaceApiAdapter.apiClient.getPlaces()
-                places = response.body()!!
-                val listPlaces = listOf(places[0].name, places[1].name)
+                withContext(placesContext){
+                    places = response.body()!!
+                }
+                /*
+                getPlaces(){
+
+                    listPlaces = listOf(it[0].name, it[1].name)
+                    val placeSpinner = findViewById<Spinner>(R.id.placeSpinner)
+                    var placeSelected:String = ""
+                    if (placeSpinner != null) {
+                        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listPlaces)
+                        placeSpinner.adapter = adapter
+                        placeSpinner.onItemSelectedListener = object :
+                            AdapterView.OnItemSelectedListener {
+                            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                                val typeSelected: String = listPlaces[position]
+                                placeSelected = typeSelected
+                            }
+
+                            override fun onNothingSelected(parent: AdapterView<*>) {
+
+                            }
+                        }
+                    }
+                }*/
             } catch (e: Exception) {
                 Toast.makeText(
                     applicationContext,
                     "Error Occurred: ${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
-            }
-        }*/
-
-        val placeSpinner = findViewById<Spinner>(R.id.placeSpinner)
-        var placeSelected:String = ""
-        val listPlaces = resources.getStringArray(R.array.places)
-        if (placeSpinner != null) {
-            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listPlaces)
-            placeSpinner.adapter = adapter
-
-            placeSpinner.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                    val typeSelected: String = listPlaces[position]
-                    placeSelected = typeSelected
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-
-                }
             }
         }
 
@@ -304,6 +307,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }.start()
         notify_btn.isEnabled = false
+        send_btn.isEnabled = false
     }
 
     //When the timer finish
@@ -315,6 +319,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         updateCountdownUI()
 
         notify_btn.isEnabled = true
+        send_btn.isEnabled = true
     }
 
     //Update the count down UI
@@ -414,4 +419,23 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         )
     }
+    /*
+    private fun getPlaces(onResult: (List<PlaceResponse>) -> Unit){
+        val retrofit = PlaceApiAdapter.buildService(ApiClient::class.java)
+        retrofit.getPlaces().enqueue(
+            object: Callback<List<PlaceResponse>>{
+                override fun onFailure(call: Call<List<PlaceResponse>>, t: Throwable) {
+                    onResult(emptyList())
+                }
+
+                override fun onResponse(
+                    call: Call<List<PlaceResponse>>,
+                    response: Response<List<PlaceResponse>>
+                ) {
+                    response.body()?.let { onResult(it) }
+                }
+
+            }
+        )
+    }*/
 }
