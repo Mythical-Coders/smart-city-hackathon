@@ -222,12 +222,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }
 
-        launch(Dispatchers.Main){
+        launch(Dispatchers.IO){
             try {
                 val response = PlaceApiAdapter.apiClient.getPlaces()
                 withContext(placesContext){
                     places = response.body()!!
                 }
+
                 /*
                 getPlaces(){
 
