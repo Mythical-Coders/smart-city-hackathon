@@ -17,7 +17,8 @@ import { logoutUser } from "../../actions/AuthActions";
 import Cookies from "js-cookie";
 import { Badge } from "@material-ui/core";
 import { notificationGetDataReceiver } from "../../actions/NotificationActions";
-
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
+import { NavLink } from "react-router-dom";
 function Header(props) {
   const { classes, onDrawerToggle } = props;
   const dispatch = useDispatch();
@@ -31,10 +32,10 @@ function Header(props) {
   };
   useEffect(() => {
     if (!notyData.data) dispatch(notificationGetDataReceiver(authData.user.id));
-      setInterval(
-        () => dispatch(notificationGetDataReceiver(authData.user.id)),
-        60000
-      );
+    setInterval(
+      () => dispatch(notificationGetDataReceiver(authData.user.id)),
+      60000
+    );
   }, [setInterval]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (notyData.data) {
@@ -48,6 +49,26 @@ function Header(props) {
       }
     }
   }, [notyData]); // eslint-disable-line react-hooks/exhaustive-deps
+  const dataNoSeenMap = () => {
+    let list =[]
+    if (dataNoSeen) {
+      
+      dataNoSeen.forEach((item) => {
+         list.push(<NavLink key={item.id} to={"/profile/"+item.id} className={classes.dropdownLink}>
+            {item.id}
+          </NavLink>)
+      })
+      list.push(<NavLink key={"seeAll"} to={"/SeeAll"} className={classes.notificationNavLink}>
+      See All
+    </NavLink>)
+      return list
+    }else {
+      list.push("No new noti")
+      list.push(<NavLink key={"seeAll"} to={"/SeeAll"} className={classes.notificationNavLink}>
+      See All
+    </NavLink>)
+    }
+  };
   return (
     <React.Fragment>
       <AppBar
@@ -78,13 +99,38 @@ function Header(props) {
               </IconButton>
             </Grid>
             <Grid item>
-              <Tooltip title={countNoti>0?"  عدد الإشعارات "+countNoti:"لا يوجد إشعارات"}>
-                <IconButton color="inherit">
-                  <Badge badgeContent={countNoti} max={10} color="primary">
-                    <NotificationsIcon />
+              <IconButton color="inherit" className={classes.iconButtonAvatar}>
+                <Tooltip
+                  title={
+                    countNoti > 0
+                      ? "  عدد الإشعارات " + countNoti
+                      : "لا يوجد إشعارات"
+                  }
+                >
+                  <Badge
+                    badgeContent={countNoti}
+                    max={10}
+                    color="primary"
+                    anchorOrigin={{
+                      vertical:"none",
+                      horizontal:"left"
+                    }}
+                  >
+                    <CustomDropdown
+                      hoverColor="info"
+                      noLiPadding
+                      buttonProps={{
+                        className: classes.navLink,
+                        color: "transparent",
+                      }}
+                      buttonIcon={NotificationsIcon}
+                      dropdownList={
+                        dataNoSeenMap()
+                      }
+                    />
                   </Badge>
-                </IconButton>
-              </Tooltip>
+                </Tooltip>
+              </IconButton>
             </Grid>
 
             <Grid item>
