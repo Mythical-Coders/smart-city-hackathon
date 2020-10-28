@@ -227,7 +227,7 @@ function ReportList() {
         );
     });
   };
-  if (reportData.loading) return <CircularProgress />;
+  if (reportData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>

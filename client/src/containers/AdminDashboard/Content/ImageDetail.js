@@ -49,7 +49,7 @@ function ImageDetail(props) {
     getData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (image.loading) return <CircularProgress />;
+  if (image.loading) return <center><CircularProgress /></center>;
   return (
     <>
       {alert}

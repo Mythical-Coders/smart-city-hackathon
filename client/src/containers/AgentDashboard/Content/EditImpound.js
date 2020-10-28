@@ -179,7 +179,7 @@ function EditImpound(props) {
       });
     }
   };
-  if (impoundData.loading) return <CircularProgress />;
+  if (impoundData.loading) return <center><CircularProgress /></center>;
   return (
     <>
       {alert}
@@ -189,6 +189,7 @@ function EditImpound(props) {
           <NavPills
             active={1}
             color="chengapp"
+            alignCenter
             tabs={[
               {
                 tabButton: "إخراج السيارة ",

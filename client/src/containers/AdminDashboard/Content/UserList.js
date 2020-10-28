@@ -285,7 +285,7 @@ function UserList() {
         );
     });
   };
-  if (authDetail.loading) return <CircularProgress />;
+  if (authDetail.loading) return <center><center><CircularProgress /></center></center>;
   else
     return (
       <>

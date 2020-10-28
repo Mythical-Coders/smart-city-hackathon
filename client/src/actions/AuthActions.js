@@ -51,6 +51,8 @@ export const logoutUser = () => async (dispatch) => {
     dispatch({ type: "CLEAR_CITIZEN" });
     dispatch({ type: "CLEAR_IMPOUND" });
     dispatch({ type: "CLEAR_PLACE" });
+    dispatch({ type: "CLEAR_NOTIFICATION" });
+
 
   } catch (err) {
     dispatch({ type: "AUTH_END_LOADING" });

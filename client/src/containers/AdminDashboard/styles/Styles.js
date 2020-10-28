@@ -215,9 +215,11 @@ const stylesPaperbase = {
     [theme.breakpoints.up("sm")]: {
       width: drawerWidth,
       flexShrink: 0,
+      
     },
   },
   app: {
+    width: `calc(100% - ${drawerWidth}px)`,
     flex: 1,
     display: "flex",
     flexDirection: "column",

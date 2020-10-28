@@ -118,7 +118,7 @@ function ImpoundList() {
     getData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (impoundData.loading) return <CircularProgress />;
+  if (impoundData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>

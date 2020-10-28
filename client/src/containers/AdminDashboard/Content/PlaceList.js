@@ -191,7 +191,7 @@ function PlaceList() {
         );
     });
   };
-  if (placeData.loading) return <CircularProgress />;
+  if (placeData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>
@@ -201,6 +201,7 @@ function PlaceList() {
         {alertDelete}
         <NavPills
           color="chengapp"
+          alignCenter
           tabs={[
             {
               tabButton: "قائمة أماكن الحجز",

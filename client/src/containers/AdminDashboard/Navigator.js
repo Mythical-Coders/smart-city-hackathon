@@ -109,7 +109,7 @@ function Navigator(props) {
         <ListItem
           className={clsx(classes.firebase, classes.item, classes.itemCategory)}
         >
-          لوحة التحكم
+          {"\xa0\xa0\xa0\xa0\xa0\xa0\xa0لوحة التحكم"}
         </ListItem>
         {categories.map(({ id, children }) => (
           <React.Fragment key={id}>
@@ -118,6 +118,7 @@ function Navigator(props) {
                 classes={{
                   primary: classes.categoryHeaderPrimary,
                 }}
+                style={{textAlign:"center"}}
               >
                 {id}
               </ListItemText>
@@ -135,16 +136,18 @@ function Navigator(props) {
                     active && classes.itemActiveItem
                   )}
                 >
-                  <ListItemIcon className={classes.itemIcon}>
-                    {icon}
-                  </ListItemIcon>
+                  
                   <ListItemText
                     classes={{
                       primary: classes.itemPrimary,
                     }}
+                    style={{textAlign:"right"}}
                   >
-                    {childId}
+                    {childId+"\xa0\xa0"}
                   </ListItemText>
+                  <ListItemIcon className={classes.itemIcon}>
+                    {icon}
+                  </ListItemIcon>
                 </ListItem>
               </NavLink>
             ))}

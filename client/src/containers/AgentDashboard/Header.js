@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import AppBar from "@material-ui/core/AppBar";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Grid from "@material-ui/core/Grid";
-// import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
 import Link from "@material-ui/core/Link";
-import Home from "@material-ui/icons/Home";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -15,15 +13,76 @@ import { withStyles } from "@material-ui/core/styles";
 import { stylesHeader } from "./styles/Styles";
 import { logoutUser } from "../../actions/AuthActions";
 import Cookies from "js-cookie";
+import { notificationGetDataReceiver } from "../../actions/NotificationActions";
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import { NavLink } from "react-router-dom";
-
+import { Home } from "@material-ui/icons";
 function Header(props) {
-  const { classes, /*onDrawerToggle*/ } = props;
+  const { classes } = props;
   const dispatch = useDispatch();
   const authData = useSelector((state) => state.auth);
+  const notyData = useSelector((state) => state.notification);
+  const [dataNoSeen, setDataNoSeen] = useState([]);
+  const [countNoti, setCountNoti] = useState(0);
   const handleLogout = () => {
     dispatch(logoutUser());
     Cookies.set("token", "");
+  };
+  useEffect(() => {
+    if (!notyData.data) dispatch(notificationGetDataReceiver(authData.user.id));
+    setInterval(
+      () => dispatch(notificationGetDataReceiver(authData.user.id)),
+      60000
+    );
+  }, [setInterval]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (notyData.data) {
+      if (notyData.data.length !== dataNoSeen.length) {
+        let dataNoSeenArray = [];
+        notyData.data.forEach((item) => {
+          if (item.seen === false) dataNoSeenArray = [...dataNoSeenArray, item];
+        });
+        setDataNoSeen(dataNoSeenArray);
+        setCountNoti(dataNoSeenArray.length);
+      }
+    }
+  }, [notyData]); // eslint-disable-line react-hooks/exhaustive-deps
+  const dataNoSeenMap = () => {
+    let list = [];
+    if (dataNoSeen) {
+      dataNoSeen.forEach((item) => {
+        list.push(
+          <NavLink
+            key={item.id}
+            to={"/profile/" + item.id}
+            className={classes.dropdownLink}
+          >
+            {item.id}
+          </NavLink>
+        );
+      });
+      list.push(
+        <NavLink
+          key={"seeAll"}
+          to={"/SeeAll"}
+          className={classes.notificationNavLink}
+        >
+          See All
+        </NavLink>
+      );
+      return list;
+    } else {
+      list.push("No new noti");
+      list.push(
+        <NavLink
+          key={"seeAll"}
+          to={"/SeeAll"}
+          className={classes.notificationNavLink}
+        >
+          See All
+        </NavLink>
+      );
+    }
   };
   return (
     <React.Fragment>
@@ -35,29 +94,6 @@ function Header(props) {
       >
         <Toolbar>
           <Grid container spacing={1} alignItems="center">
-              <Grid item>
-                <NavLink to="/agent_dashboard/impounds"
-                  className={classes.menuButton}
-                  style={{color: "white"}}
-                >
-                  <Home />
-                </NavLink>
-              </Grid>
-            <Grid item xs />
-
-            <Grid item>
-              <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                {authData.user.username}
-              </IconButton>
-            </Grid>
-
-            <Grid item>
-              <Tooltip title="Alerts • No alerts">
-                <IconButton color="inherit">
-                  <NotificationsIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
             <Grid item>
               <Link
                 onClick={handleLogout}
@@ -68,6 +104,42 @@ function Header(props) {
                 <ExitToAppIcon /> خروج
               </Link>
             </Grid>
+            <Tooltip
+              title={
+                countNoti > 0
+                  ? "  عدد الإشعارات " + countNoti
+                  : "لا يوجد إشعارات"
+              }
+            >
+              <Grid item>
+                <CustomDropdown
+                  hoverColor="info"
+                  noLiPadding
+                  buttonProps={{
+                    className: classes.navLink,
+                    color: countNoti > 0 ? "info" : "transparent",
+                  }}
+                  buttonText={countNoti > 10 ? "+10" : countNoti}
+                  buttonIcon={NotificationsIcon}
+                  dropdownList={dataNoSeenMap()}
+                />
+              </Grid>
+            </Tooltip>
+
+            <Grid item>
+              <IconButton color="inherit" className={classes.iconButtonAvatar}>
+                {authData.user.username}
+              </IconButton>
+            </Grid>
+            <Grid item xs />
+            <Grid item>
+                <NavLink to="/agent_dashboard/impounds"
+                  className={classes.menuButton}
+                  style={{color: "white"}}
+                >
+                  <Home />
+                </NavLink>
+              </Grid>
           </Grid>
         </Toolbar>
       </AppBar>

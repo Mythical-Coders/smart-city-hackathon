@@ -226,7 +226,7 @@ function CitizenList() {
         );
     });
   };
-  if (citizenData.loading) return <CircularProgress />;
+  if (citizenData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>

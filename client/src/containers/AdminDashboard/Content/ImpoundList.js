@@ -313,7 +313,7 @@ function ImpoundList() {
         );
     });
   };
-  if (impoundData.loading) return <CircularProgress />;
+  if (impoundData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>

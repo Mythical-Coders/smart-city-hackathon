@@ -255,7 +255,7 @@ function ProfileList() {
         );
     });
   };
-  if (profileData.loading) return <CircularProgress />;
+  if (profileData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>

@@ -230,7 +230,7 @@ function ReportPlaceList() {
         );
     });
   };
-  if (reportPlaceData.loading) return <CircularProgress />;
+  if (reportPlaceData.loading) return <center><CircularProgress /></center>;
   else
     return (
       <>

@@ -18,7 +18,6 @@ import ImageList from "./Content/ImageList";
 import ImageDetail from "./Content/ImageDetail";
 import Statictics from "../Statistics/Statictics";
 
-
 const drawerWidth = 256;
 
 function AdminDashboard(props) {
@@ -33,33 +32,59 @@ function AdminDashboard(props) {
     <ThemeProvider theme={theme}>
       <div className={classes.root}>
         <CssBaseline />
-        <nav className={classes.drawer}>
-          <Hidden smUp implementation="js">
-            <Navigator
-              PaperProps={{ style: { width: drawerWidth } }}
-              variant="temporary"
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-            />
-          </Hidden>
-          <Hidden xsDown implementation="css">
-            <Navigator PaperProps={{ style: { width: drawerWidth } }} />
-          </Hidden>
-        </nav>
+
         <div className={classes.app}>
           <Header onDrawerToggle={handleDrawerToggle} />
           <main className={classes.main}>
             <Switch>
-              <Route path={"/admin_dashboard/users"} exact component={UserList} />
-              <Route path={"/admin_dashboard/impounds"} exact component={ImpoundList} />
-              <Route path={"/admin_dashboard/places"} exact component={PlaceList} />
-              <Route path={"/admin_dashboard/citizens"} exact component={CitizenList} />
-              <Route path={"/admin_dashboard/profiles"} exact component={ProfileList} />
-              <Route path={"/admin_dashboard/reports"} exact component={ReportList} />
-              <Route path={"/admin_dashboard/reportPlaces"} exact component={ReportPlaceList} />
-              <Route path={"/admin_dashboard/images"} exact component={ImageList} />
-              <Route path={"/agent_dashboard/images/:id"}  component={ImageDetail} />
-              <Route path={"/agent_dashboard/statistics"}  component={Statictics} />
+              <Route
+                path={"/admin_dashboard/users"}
+                exact
+                component={UserList}
+              />
+              <Route
+                path={"/admin_dashboard/impounds"}
+                exact
+                component={ImpoundList}
+              />
+              <Route
+                path={"/admin_dashboard/places"}
+                exact
+                component={PlaceList}
+              />
+              <Route
+                path={"/admin_dashboard/citizens"}
+                exact
+                component={CitizenList}
+              />
+              <Route
+                path={"/admin_dashboard/profiles"}
+                exact
+                component={ProfileList}
+              />
+              <Route
+                path={"/admin_dashboard/reports"}
+                exact
+                component={ReportList}
+              />
+              <Route
+                path={"/admin_dashboard/reportPlaces"}
+                exact
+                component={ReportPlaceList}
+              />
+              <Route
+                path={"/admin_dashboard/images"}
+                exact
+                component={ImageList}
+              />
+              <Route
+                path={"/agent_dashboard/images/:id"}
+                component={ImageDetail}
+              />
+              <Route
+                path={"/agent_dashboard/statistics"}
+                component={Statictics}
+              />
 
               <Redirect to={"/admin_dashboard/users"} />
             </Switch>
@@ -68,6 +93,23 @@ function AdminDashboard(props) {
             <Copyright />
           </footer>
         </div>
+        <nav className={classes.drawer}>
+          <Hidden smUp implementation="js">
+            <Navigator
+              PaperProps={{ style: { width: drawerWidth } }}
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              anchor="right"
+            />
+          </Hidden>
+          <Hidden xsDown implementation="css">
+            <Navigator
+              PaperProps={{ style: { width: drawerWidth } }}
+              anchor="right"
+            />
+          </Hidden>
+        </nav>
       </div>
     </ThemeProvider>
   );

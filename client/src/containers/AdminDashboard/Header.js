@@ -15,7 +15,6 @@ import { withStyles } from "@material-ui/core/styles";
 import { stylesHeader } from "./styles/Styles";
 import { logoutUser } from "../../actions/AuthActions";
 import Cookies from "js-cookie";
-import { Badge } from "@material-ui/core";
 import { notificationGetDataReceiver } from "../../actions/NotificationActions";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import { NavLink } from "react-router-dom";
@@ -50,23 +49,40 @@ function Header(props) {
     }
   }, [notyData]); // eslint-disable-line react-hooks/exhaustive-deps
   const dataNoSeenMap = () => {
-    let list =[]
+    let list = [];
     if (dataNoSeen) {
-      
       dataNoSeen.forEach((item) => {
-         list.push(<NavLink key={item.id} to={"/profile/"+item.id} className={classes.dropdownLink}>
+        list.push(
+          <NavLink
+            key={item.id}
+            to={"/profile/" + item.id}
+            className={classes.dropdownLink}
+          >
             {item.id}
-          </NavLink>)
-      })
-      list.push(<NavLink key={"seeAll"} to={"/SeeAll"} className={classes.notificationNavLink}>
-      See All
-    </NavLink>)
-      return list
-    }else {
-      list.push("No new noti")
-      list.push(<NavLink key={"seeAll"} to={"/SeeAll"} className={classes.notificationNavLink}>
-      See All
-    </NavLink>)
+          </NavLink>
+        );
+      });
+      list.push(
+        <NavLink
+          key={"seeAll"}
+          to={"/SeeAll"}
+          className={classes.notificationNavLink}
+        >
+          See All
+        </NavLink>
+      );
+      return list;
+    } else {
+      list.push("No new noti");
+      list.push(
+        <NavLink
+          key={"seeAll"}
+          to={"/SeeAll"}
+          className={classes.notificationNavLink}
+        >
+          See All
+        </NavLink>
+      );
     }
   };
   return (
@@ -79,6 +95,44 @@ function Header(props) {
       >
         <Toolbar>
           <Grid container spacing={1} alignItems="center">
+            <Grid item>
+              <Link
+                onClick={handleLogout}
+                className={classes.link}
+                href="#"
+                variant="body2"
+              >
+                <ExitToAppIcon /> خروج
+              </Link>
+            </Grid>
+            <Tooltip
+              title={
+                countNoti > 0
+                  ? "  عدد الإشعارات " + countNoti
+                  : "لا يوجد إشعارات"
+              }
+            >
+              <Grid item>
+                <CustomDropdown
+                  hoverColor="info"
+                  noLiPadding
+                  buttonProps={{
+                    className: classes.navLink,
+                    color: countNoti > 0 ? "info" : "transparent",
+                  }}
+                  buttonText={countNoti > 10 ? "+10" : countNoti}
+                  buttonIcon={NotificationsIcon}
+                  dropdownList={dataNoSeenMap()}
+                />
+              </Grid>
+            </Tooltip>
+
+            <Grid item>
+              <IconButton color="inherit" className={classes.iconButtonAvatar}>
+                {authData.user.username}
+              </IconButton>
+            </Grid>
+            <Grid item xs />
             <Hidden smUp>
               <Grid item>
                 <IconButton
@@ -91,58 +145,6 @@ function Header(props) {
                 </IconButton>
               </Grid>
             </Hidden>
-            <Grid item xs />
-
-            <Grid item>
-              <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                {authData.user.username}
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                <Tooltip
-                  title={
-                    countNoti > 0
-                      ? "  عدد الإشعارات " + countNoti
-                      : "لا يوجد إشعارات"
-                  }
-                >
-                  <Badge
-                    badgeContent={countNoti}
-                    max={10}
-                    color="primary"
-                    anchorOrigin={{
-                      vertical:"none",
-                      horizontal:"left"
-                    }}
-                  >
-                    <CustomDropdown
-                      hoverColor="info"
-                      noLiPadding
-                      buttonProps={{
-                        className: classes.navLink,
-                        color: "transparent",
-                      }}
-                      buttonIcon={NotificationsIcon}
-                      dropdownList={
-                        dataNoSeenMap()
-                      }
-                    />
-                  </Badge>
-                </Tooltip>
-              </IconButton>
-            </Grid>
-
-            <Grid item>
-              <Link
-                onClick={handleLogout}
-                className={classes.link}
-                href="#"
-                variant="body2"
-              >
-                <ExitToAppIcon /> خروج
-              </Link>
-            </Grid>
           </Grid>
         </Toolbar>
       </AppBar>

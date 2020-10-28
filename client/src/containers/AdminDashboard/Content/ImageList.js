@@ -101,13 +101,19 @@ function ImageList() {
         );
     });
   };
-  if (imageData.loading) return <CircularProgress />;
+  if (imageData.loading)
+    return (
+      <center>
+        <CircularProgress />
+      </center>
+    );
   else
     return (
       <>
         {alert}
         {alertDelete}
         <NavPills
+          alignCenter
           color="chengapp"
           tabs={[
             {
