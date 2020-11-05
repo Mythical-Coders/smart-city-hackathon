@@ -1,15 +1,17 @@
 const initialState = {
-    image: null
+  image: null,
 };
 
-export default function (state = initialState,action) {
-    switch(action.type) {
-        case "UPLOAD_IMAGE":
-            return {
-                ...state,
-                image: action.payload
-            };
-        default:
-            return state;
-    }
+export default function (state = initialState, action) {
+  switch (action.type) {
+    case "UPLOAD_IMAGE":
+      return {
+        ...state,
+        image: action.payload,
+      };
+    case "CLEAR_UPLOAD_IMAGE":
+      return { ...state, image: null };
+    default:
+      return state;
+  }
 }

@@ -128,7 +128,7 @@ function ImageList() {
                     data={state.data}
                     localization={localization()}
                     onRowClick={(e, rowData) =>
-                      history.push("/agent_dashboard/images/" + rowData.id)
+                      history.push("/admin_dashboard/images/" + rowData.id)
                     }
                     editable={{
                       onRowDelete: (oldData) =>

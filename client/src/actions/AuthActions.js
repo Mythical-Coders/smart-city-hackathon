@@ -51,9 +51,11 @@ export const logoutUser = () => async (dispatch) => {
     dispatch({ type: "CLEAR_CITIZEN" });
     dispatch({ type: "CLEAR_IMPOUND" });
     dispatch({ type: "CLEAR_PLACE" });
-    dispatch({ type: "CLEAR_NOTIFICATION" });
-
-
+    dispatch({ type: "CLEAR_IMAGE" });
+    dispatch({ type: "CLEAR_PROFILE" });
+    dispatch({ type: "CLEAR_REPORT_PLACE" });
+    dispatch({ type: "CLEAR_UPLOAD_IMAGE" });
+    dispatch({ type: "CLEAR_REPORT" });
   } catch (err) {
     dispatch({ type: "AUTH_END_LOADING" });
     dispatch({ type: "PROFILE_END_LOADING" });

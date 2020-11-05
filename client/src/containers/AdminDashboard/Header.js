@@ -10,7 +10,7 @@ import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import Toolbar from "@material-ui/core/Toolbar";
-import Tooltip from "@material-ui/core/Tooltip";
+// import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
 import { stylesHeader } from "./styles/Styles";
 import { logoutUser } from "../../actions/AuthActions";
@@ -33,7 +33,7 @@ function Header(props) {
     if (!notyData.data) dispatch(notificationGetDataReceiver(authData.user.id));
     setInterval(
       () => dispatch(notificationGetDataReceiver(authData.user.id)),
-      60000
+      30000
     );
   }, [setInterval]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -43,7 +43,7 @@ function Header(props) {
         notyData.data.forEach((item) => {
           if (item.seen === false) dataNoSeenArray = [...dataNoSeenArray, item];
         });
-        setDataNoSeen(dataNoSeenArray);
+        setDataNoSeen(dataNoSeenArray.sort((a, b) => (a.date > b.date ? -1 : 1)));
         setCountNoti(dataNoSeenArray.length);
       }
     }
@@ -55,18 +55,18 @@ function Header(props) {
         list.push(
           <NavLink
             key={item.id}
-            to={"/profile/" + item.id}
+            to={"/admin_dashboard/notifications/" + item.id}
             className={classes.dropdownLink}
           >
-            {item.id}
+            {item.type+" "+item.title+" "+item.date}
           </NavLink>
         );
       });
       list.push(
         <NavLink
           key={"seeAll"}
-          to={"/SeeAll"}
-          className={classes.notificationNavLink}
+          to={"/admin_dashboard/notifications"}
+          className={classes.dropdownLink}
         >
           See All
         </NavLink>
@@ -77,8 +77,8 @@ function Header(props) {
       list.push(
         <NavLink
           key={"seeAll"}
-          to={"/SeeAll"}
-          className={classes.notificationNavLink}
+          to={"/admin_dashboard/notifications"}
+          className={classes.dropdownLink}
         >
           See All
         </NavLink>
@@ -105,13 +105,13 @@ function Header(props) {
                 <ExitToAppIcon /> خروج
               </Link>
             </Grid>
-            <Tooltip
+            {/* <Tooltip
               title={
                 countNoti > 0
                   ? "  عدد الإشعارات " + countNoti
                   : "لا يوجد إشعارات"
               }
-            >
+            > */}
               <Grid item>
                 <CustomDropdown
                   hoverColor="info"
@@ -125,7 +125,7 @@ function Header(props) {
                   dropdownList={dataNoSeenMap()}
                 />
               </Grid>
-            </Tooltip>
+            {/* </Tooltip> */}
 
             <Grid item>
               <IconButton color="inherit" className={classes.iconButtonAvatar}>

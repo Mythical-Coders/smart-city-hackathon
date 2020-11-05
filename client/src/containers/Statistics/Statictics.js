@@ -87,7 +87,7 @@ function Statictics() {
           ),
         },
         {
-          tabButton: "نسبة إمتلاء مركز الحاجز ",
+          tabButton: "نسبة إمتلاء مركز الحجز ",
 
           tabIcon: Schedule,
           tabContent: (

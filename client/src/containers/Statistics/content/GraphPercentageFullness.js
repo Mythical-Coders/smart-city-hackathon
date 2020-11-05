@@ -108,7 +108,7 @@ class GraphPercentageFullness extends React.PureComponent {
               itemComponent={Item}
               labelComponent={Label}
             />
-            <Title text={`نسبة إمتلاء مركز الحاجز`} textComponent={TitleText} />
+            <Title text={`نسبة إمتلاء مركز الحجز`} textComponent={TitleText} />
             <Animation />
           </Chart>
         </Paper>

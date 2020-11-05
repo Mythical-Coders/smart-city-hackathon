@@ -74,7 +74,7 @@ const defaultCategories = [
   {
     id: "جودة",
     children: [
-      { id: "تحليلات", icon: <SettingsIcon />, link: "/agent_dashboard/statistics" },
+      { id: "تحليلات", icon: <SettingsIcon />, link: "/admin_dashboard/statistics" },
       { id: "أداء", icon: <TimerIcon />, link: "/admin_dashboard" },
       {
         id: "معمل الاختبار",

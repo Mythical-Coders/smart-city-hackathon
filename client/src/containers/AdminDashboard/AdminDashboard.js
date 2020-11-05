@@ -17,6 +17,8 @@ import ReportPlaceList from "./Content/ReportPlaceList";
 import ImageList from "./Content/ImageList";
 import ImageDetail from "./Content/ImageDetail";
 import Statictics from "../Statistics/Statictics";
+import NotificationList from "./Content/NotificationList";
+import NotificationDetail from "./Content/NotificationDetail";
 
 const drawerWidth = 256;
 
@@ -78,14 +80,22 @@ function AdminDashboard(props) {
                 component={ImageList}
               />
               <Route
-                path={"/agent_dashboard/images/:id"}
+                path={"/admin_dashboard/images/:id"}
                 component={ImageDetail}
               />
               <Route
-                path={"/agent_dashboard/statistics"}
+                path={"/admin_dashboard/statistics"}
                 component={Statictics}
               />
-
+              <Route
+                path={"/admin_dashboard/notifications"}
+                exact
+                component={NotificationList}
+              />
+              <Route
+                path={"/admin_dashboard/notifications/:id"}
+                component={NotificationDetail}
+              />
               <Redirect to={"/admin_dashboard/users"} />
             </Switch>
           </main>

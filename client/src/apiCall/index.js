@@ -79,7 +79,7 @@ const apiCallCitizen = (url, method, body = {}, token = "") =>
   const apiCallNotification = (url, method, body = {}, token = "") =>
   axios({
     method,
-    url: `http://localhost:8089/api/notification${url}`,
+    url: `https://cheng-app.herokuapp.com/api/notification${url}`,
     data: body,
     headers: {
       ...composeToken(token),
