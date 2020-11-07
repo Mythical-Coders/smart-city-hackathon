@@ -74,7 +74,7 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="402dp"
-        android:layout_height="57dp"
+        android:layout_height="63dp"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,6 +87,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?android:attr/windowBackground"
+            app:itemTextAppearanceActive="@style/BottomNavigationView.Active"
+            app:itemTextAppearanceInactive="@style/BottomNavigationView"
+            app:labelVisibilityMode="labeled"
             app:itemIconTint="#FF7A22"
             app:itemTextColor="#201E1E"
             app:menu="@menu/navigation">

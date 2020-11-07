@@ -48,8 +48,9 @@
 
     <!-- bottom nav bar -->
     <string name="home">إستقبال</string>
-    <string name="aboutUs">تعرف على التطبيق</string>
+    <string name="aboutUs">تعرف</string>
     <string name="logOut">الخروج</string>
+    <string name="notif">تنبيه</string>
 
     <!-- About us activity -->
     <string name="aboutUsText">تعرف المزيد</string>
@@ -69,7 +70,6 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-
 
 
 </resources>

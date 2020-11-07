@@ -49,7 +49,7 @@ class WelcomeActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
         //set animation
         appLogo.animation = topAnim
-        logoBackground.animation = topAnim
+        logoBackground.animation = botAnim
         appName.animation = topAnim
         signUp_btn.animation = botAnim
         signIn_btn.animation = topAnim

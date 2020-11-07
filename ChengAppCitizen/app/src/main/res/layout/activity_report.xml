@@ -61,8 +61,8 @@
 
     <ImageView
         android:id="@+id/photoView"
-        android:layout_width="149dp"
-        android:layout_height="85dp"
+        android:layout_width="152dp"
+        android:layout_height="138dp"
         android:background="@drawable/edit_round"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -185,6 +185,7 @@
             android:layout_height="match_parent"
             android:background="?android:attr/windowBackground"
             app:itemIconTint="#FF7A22"
+            app:labelVisibilityMode="labeled"
             app:itemTextColor="#201E1E"
             app:menu="@menu/navigation">
 

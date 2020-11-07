@@ -149,8 +149,8 @@
 
     <ImageView
         android:id="@+id/logoBackground"
-        android:layout_width="201dp"
-        android:layout_height="149dp"
+        android:layout_width="199dp"
+        android:layout_height="143dp"
         android:contentDescription="@string/logo_desc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -161,8 +161,8 @@
 
     <ImageView
         android:id="@+id/appLogo"
-        android:layout_width="183dp"
-        android:layout_height="133dp"
+        android:layout_width="202dp"
+        android:layout_height="134dp"
         android:contentDescription="@string/logo_desc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

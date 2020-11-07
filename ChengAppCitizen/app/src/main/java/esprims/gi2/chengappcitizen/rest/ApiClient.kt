@@ -33,6 +33,8 @@ interface ApiClient {
     @POST("/api/reportPlace/")
     fun addPlace(@Body mapRequest: MapRequest):Call<MapResponse>
 
-
+    //Get impound by Citizen
+    @GET("/api/notification/receiver/{idReceiver}")
+    fun getImpound(@Path("idReceiver") idReceiver : String): Call<List<ImpoundResponse>>
 
 }
