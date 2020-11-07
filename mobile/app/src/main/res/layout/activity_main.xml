@@ -7,6 +7,7 @@
     tools:context="tn.smartCities.chengApp.activity.MainActivity" >
 
     <include
+        android:id="@+id/include"
         layout="@layout/content_timer"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-16dp" />
@@ -147,5 +148,15 @@
        app:layout_constraintEnd_toEndOf="parent"
        app:layout_constraintHorizontal_bias="0.878"
        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/carImage"
+        android:layout_width="404dp"
+        android:layout_height="728dp"
+        android:background="@color/appColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/include"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

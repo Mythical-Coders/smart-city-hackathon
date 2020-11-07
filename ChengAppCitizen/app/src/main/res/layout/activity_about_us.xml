@@ -36,7 +36,7 @@
         android:id="@+id/container"
         android:layout_width="402dp"
         android:layout_height="57dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="70dp"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,6 +51,7 @@
             android:background="?android:attr/windowBackground"
             app:itemIconTint="#FF7A22"
             app:itemTextColor="#201E1E"
+            app:labelVisibilityMode="labeled"
             app:menu="@menu/navigation">
 
 

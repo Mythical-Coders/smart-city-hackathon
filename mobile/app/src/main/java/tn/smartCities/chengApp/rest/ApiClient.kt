@@ -20,10 +20,11 @@ interface ApiClient {
     @POST("/api/impound/")
     fun addImpound(@Body impound: Impound):Call<Impound>
 
-    @Multipart
-    @POST("/api/photos/add")
-    fun uploadPhoto(@Part("imageName") image: RequestBody, @Part file: MultipartBody.Part): Call<String>
-
     @GET("/api/place/all")
     suspend fun getPlaces(): Response<List<PlaceResponse>>
+
+    //@Headers("Content-Type: multipart/form-data")
+    @Multipart
+    @POST ("/predict")
+    fun addPhoto(@Part imageFile:MultipartBody.Part):Call<PhotoResponse>
 }

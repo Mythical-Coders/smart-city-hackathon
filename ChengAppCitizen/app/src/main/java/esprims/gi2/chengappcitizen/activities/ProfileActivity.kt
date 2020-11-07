@@ -9,6 +9,7 @@ import esprims.gi2.chengappcitizen.R
 import esprims.gi2.chengappcitizen.adapters.ProfileAdapter
 import esprims.gi2.chengappcitizen.models.ProfileRequest
 import esprims.gi2.chengappcitizen.models.ProfileResponse
+import esprims.gi2.chengappcitizen.preference.AppPreference
 import esprims.gi2.chengappcitizen.rest.ApiClient
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +51,7 @@ class ProfileActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
                                 intent = Intent(applicationContext,WelcomeActivity::class.java)
                                 intent.putExtra("username2",username)
+                                AppPreference.cin = cinId.text.toString()
                                 startActivity(intent)
                         }
                         else{

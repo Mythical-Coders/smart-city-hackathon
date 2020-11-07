@@ -12,6 +12,7 @@ object AppPreference {
     private val IS_LOGIN = Pair("is_login", false)
     private val USERNAME = Pair("username", "")
     private val PASSWORD = Pair("password", "")
+    private val CIN = Pair("cin","")
     private val ID = Pair("id", "")
 
     fun init(context: Context) {
@@ -49,4 +50,11 @@ object AppPreference {
         set(value) = preferences.edit {
             it.putString(ID.first, value)
         }
+
+    var cin: String
+        get() = preferences.getString(CIN.first, CIN.second) ?: ""
+        set(value) = preferences.edit {
+            it.putString(CIN.first, value)
+        }
+
 }

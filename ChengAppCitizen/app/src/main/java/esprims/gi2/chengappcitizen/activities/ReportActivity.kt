@@ -154,7 +154,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     type = "noValue"
                 }
             }
-            if (type != "noValue" && pressAgain ==false) {
+            if (type != "noValue" ) {
 
 
                 //get the user's id
@@ -187,7 +187,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                             } else {
                                 Toast.makeText(
                                     applicationContext,
-                                    "errorr !!!",
+                                    "conexxion problem !!!",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -206,7 +206,7 @@ class ReportActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
 
             }
-            else if (type !="noValue" && pressAgain == true){
+            else if (type !="noValue"){
                 Toast.makeText(
                     applicationContext,
                     "location registered please click again",

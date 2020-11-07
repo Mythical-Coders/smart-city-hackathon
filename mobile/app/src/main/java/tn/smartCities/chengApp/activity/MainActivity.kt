@@ -1,15 +1,15 @@
 package tn.smartCities.chengApp.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.app.ProgressDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -17,14 +17,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.telephony.SmsManager
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
@@ -36,21 +37,32 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_timer.*
 import kotlinx.android.synthetic.main.custom_action_bar.*
 import kotlinx.coroutines.*
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import tn.smartCities.chengApp.adapter.CitizenApiAdapter
 import tn.smartCities.chengApp.adapter.ImpoundApiAdapter
-import tn.smartCities.chengApp.adapter.PlaceApiAdapter
-import tn.smartCities.chengApp.model.Citizen
-import tn.smartCities.chengApp.model.Impound
-import tn.smartCities.chengApp.model.PlaceResponse
+import tn.smartCities.chengApp.adapter.PhotoAdapter
+import tn.smartCities.chengApp.model.*
 import tn.smartCities.chengApp.preference.AppPreferences
 import tn.smartCities.chengApp.rest.ApiClient
+import tn.smartCities.chengApp.util.DbBitmapUtility
 import tn.smartCities.chengApp.util.PrefUtil
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
+import kotlin.time.minutes
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+    //load the dbBitMapUtility for converting images type functions
+    private val convert: DbBitmapUtility = DbBitmapUtility(this)
+
+    private var selectedImagesPaths // Paths of the image(s) selected by the user.
+            : ArrayList<String>? = null
+    private var imagesSelected = false
 
     private lateinit var timer: CountDownTimer
     private var timerLengthSeconds: Long = 300L
@@ -62,8 +74,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     //Message to be sent to someone to notify him along with location
     var msg = "لديك خمسة دقائق لتغير مكان سيارتك أو سيقع شنقلتها، "
-
-    var bitmap: Bitmap? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,12 +134,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         done_icon_back.visibility = View.INVISIBLE
         error_icon_back.visibility = View.INVISIBLE
 
+        carImage.visibility = View.INVISIBLE
+
+
         //When clicking on notify it appends the location to the msg and call the API to extract the citizen info and send sms
         notify_btn.setOnClickListener {
             msg += location
             launch(Dispatchers.Main) {
                 try {
-                    val response = CitizenApiAdapter.apiClient.getCitizenByMatricule(licensePlate.text.toString())
+                    val response =
+                        CitizenApiAdapter.apiClient.getCitizenByMatricule(licensePlate.text.toString())
                     citizen = response.body()!!
                     sendSms(response.body()?.telephone.toString(), msg)
                 } catch (e: Exception) {
@@ -166,11 +180,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             )
         } else
             take_front_photo.isEnabled = true
-            take_back_photo.isEnabled = true
+        take_back_photo.isEnabled = true
 
         take_front_photo.setOnClickListener {
+            /*
             val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(i, 101)
+            startActivityForResult(i, 101)*/
+            val intent = Intent()
+            intent.type = "*/*"
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(
+                Intent.createChooser(intent, "Select Picture"),
+                103
+            )
         }
 
         take_back_photo.setOnClickListener {
@@ -221,65 +244,62 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             }
         }
-
-        launch(Dispatchers.IO){
-            try {
-                val response = PlaceApiAdapter.apiClient.getPlaces()
-                withContext(placesContext){
-                    places = response.body()!!
-                }
-
-                /*
-                getPlaces(){
-
-                    listPlaces = listOf(it[0].name, it[1].name)
-                    val placeSpinner = findViewById<Spinner>(R.id.placeSpinner)
-                    var placeSelected:String = ""
-                    if (placeSpinner != null) {
-                        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listPlaces)
-                        placeSpinner.adapter = adapter
-                        placeSpinner.onItemSelectedListener = object :
-                            AdapterView.OnItemSelectedListener {
-                            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                                val typeSelected: String = listPlaces[position]
-                                placeSelected = typeSelected
-                            }
-
-                            override fun onNothingSelected(parent: AdapterView<*>) {
-
-                            }
-                        }
-                    }
-                }*/
-            } catch (e: Exception) {
-                Toast.makeText(
-                    applicationContext,
-                    "Error Occurred: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-
     }
 
     //When the camera intent is done, we change the visibility of either the done or error icon
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        var uri: Uri? = null
         if (requestCode == 101) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 done_icon_front.visibility = View.VISIBLE
-            } else{
+                val imageBitMap = data.extras?.get("data") as Bitmap
+                carImage.setImageBitmap(imageBitMap)
+
+                val imageFile = convert.buildImageBodyPart("image", imageBitMap)
+                    try {
+                        val photoRequest = PhotoRequest( imageFile)
+                        addPhotoService(imageFile) {
+                            licensePlate.setText(it)
+                        }
+
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Error Occurred photo: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+            } else {
                 error_icon_front.visibility = View.VISIBLE
             }
         }
         if (requestCode == 102) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 done_icon_back.visibility = View.VISIBLE
-            } else{
+            } else {
                 error_icon_back.visibility = View.VISIBLE
             }
         }
+        if (requestCode === 103 && resultCode === Activity.RESULT_OK && null != data) {
+            // When a single image is selected.
+            done_icon_front.visibility = View.VISIBLE
+            var currentImagePath: String
+            selectedImagesPaths = ArrayList()
+            val uri = data.data
+            currentImagePath = uri?.let { getPath(applicationContext, it) }.toString()
+            Log.d("ImageDetails", "Single Image URI : $uri")
+            Log.d("ImageDetails", "Single Image Path : $currentImagePath")
+            selectedImagesPaths!!.add(currentImagePath)
+            imagesSelected = true
+            connectServer()
+        } else {
+            Toast.makeText(this, "You haven't Picked any Image.", Toast.LENGTH_LONG).show()
+        }
+        Toast.makeText(
+            applicationContext,
+            selectedImagesPaths?.size.toString() + " Image(s) Selected.",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     //When Camera permission is granted the button will be enabled
@@ -291,7 +311,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 111 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             take_front_photo.isEnabled = true
-            take_back_photo.isEnabled = true
+        take_back_photo.isEnabled = true
 
     }
 
@@ -364,18 +384,43 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val sendSMS: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (resultCode) {
-                    Activity.RESULT_OK ->{
+                    Activity.RESULT_OK -> {
                         startTimer()
-                        Toasty.success(this@MainActivity, "SMS sent success!", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.success(
+                            this@MainActivity,
+                            "SMS sent success!",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                     }
                     SmsManager.RESULT_ERROR_NO_SERVICE ->
-                        Toasty.error(this@MainActivity, "No active network to send SMS.", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.error(
+                            this@MainActivity,
+                            "No active network to send SMS.",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                     SmsManager.RESULT_ERROR_RADIO_OFF ->
-                        Toasty.error(this@MainActivity, "SMS not sent 1!", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.error(
+                            this@MainActivity,
+                            "SMS not sent 1!",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                     SmsManager.RESULT_ERROR_GENERIC_FAILURE ->
-                        Toasty.error(this@MainActivity, "SMS not sent 2!", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.error(
+                            this@MainActivity,
+                            "SMS not sent 2!",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                     SmsManager.RESULT_ERROR_NULL_PDU ->
-                        Toasty.error(this@MainActivity, "SMS not sent! 3", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.error(
+                            this@MainActivity,
+                            "SMS not sent! 3",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                 }
             }
         }
@@ -384,9 +429,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (resultCode) {
                     Activity.RESULT_OK ->
-                        Toasty.success(this@MainActivity, "SMS delivered.", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.success(
+                            this@MainActivity,
+                            "SMS delivered.",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                     Activity.RESULT_CANCELED ->
-                        Toasty.error(this@MainActivity, "SMS not delivered.", Toasty.LENGTH_SHORT, true).show()
+                        Toasty.error(
+                            this@MainActivity,
+                            "SMS not delivered.",
+                            Toasty.LENGTH_SHORT,
+                            true
+                        ).show()
                 }
             }
 
@@ -395,7 +450,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         registerReceiver(sendSMS, IntentFilter(SENT))
         registerReceiver(deliverSMS, IntentFilter(DELIVERED))
 
-        smsManager.sendMultipartTextMessage(number,null,parts,sentPI,deliveredPI)
+        smsManager.sendMultipartTextMessage(number, null, parts, sentPI, deliveredPI)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -439,4 +494,175 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         )
     }*/
+
+    private fun addPhotoService(photoRequest: MultipartBody.Part, onResult: (String) -> Unit) {
+        val retrofit = PhotoAdapter.buildService(ApiClient::class.java)
+        retrofit.addPhoto(photoRequest).enqueue(
+            object : Callback<PhotoResponse> {
+                override fun onFailure(call: Call<PhotoResponse>, t: Throwable) {
+                    onResult("failed")
+                }
+
+                override fun onResponse(
+                    call: Call<PhotoResponse>,
+                    response: Response<PhotoResponse>
+                ) {
+                    onResult(response.message())
+                }
+
+            }
+        )
+    }
+
+    private fun getPath(context: Context?, uri: Uri): String? {
+        val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                val docId = DocumentsContract.getDocumentId(uri)
+                val split = docId.split(":".toRegex()).toTypedArray()
+                val type = split[0]
+                if ("primary".equals(type, ignoreCase = true)) {
+                    return Environment.getExternalStorageDirectory()
+                        .toString() + "/" + split[1]
+                }
+
+                // TODO handle non-primary volumes
+            } else if (isDownloadsDocument(uri)) {
+                val id = DocumentsContract.getDocumentId(uri)
+                val contentUri = ContentUris.withAppendedId(
+                    Uri.parse("content://downloads/public_downloads"),
+                    java.lang.Long.valueOf(id)
+                )
+                return getDataColumn(context!!, contentUri, "", arrayOf())
+            } else if (isMediaDocument(uri)) {
+                val docId = DocumentsContract.getDocumentId(uri)
+                val split = docId.split(":".toRegex()).toTypedArray()
+                val type = split[0]
+                var contentUri: Uri? = null
+                if ("image" == type) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                } else if ("video" == type) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                } else if ("audio" == type) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                }
+                val selection = "_id=?"
+                val selectionArgs = arrayOf(
+                    split[1]
+                )
+                return getDataColumn(context!!, contentUri!!, selection, selectionArgs)
+            }
+        } else if ("content".equals(uri.scheme, ignoreCase = true)) {
+            return getDataColumn(context!!, uri, "", arrayOf())
+        } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+            return uri.path
+        }
+        return null
+    }
+
+    private fun getDataColumn(
+        context: Context, uri: Uri, selection: String,
+        selectionArgs: Array<String>
+    ): String? {
+        var cursor: Cursor? = null
+        val column = "_data"
+        val projection = arrayOf(
+            column
+        )
+        try {
+            cursor = context.contentResolver.query(
+                uri!!, projection, selection, selectionArgs,
+                null
+            )
+            if (cursor != null && cursor.moveToFirst()) {
+                val column_index: Int = cursor.getColumnIndexOrThrow(column)
+                return cursor.getString(column_index)
+            }
+        } finally {
+            cursor?.close()
+        }
+        return null
+    }
+
+    private fun isExternalStorageDocument(uri: Uri): Boolean {
+        return "com.android.externalstorage.documents" == uri.authority
+    }
+
+    private fun isDownloadsDocument(uri: Uri): Boolean {
+        return "com.android.providers.downloads.documents" == uri.authority
+    }
+
+    private fun isMediaDocument(uri: Uri): Boolean {
+        return "com.android.providers.media.documents" == uri.authority
+    }
+
+    private fun postRequest(postUrl: String, postBody: RequestBody) {
+        val client = OkHttpClient().newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(50, TimeUnit.SECONDS)
+            .readTimeout(50, TimeUnit.SECONDS)
+            .build()
+        val request: Request = Request.Builder()
+            .method("POST", postBody)
+            .url(postUrl)
+            .build()
+
+        client.newCall(request).enqueue(object : okhttp3.Callback {
+                override fun onFailure(call: okhttp3.Call, e: IOException) {
+                    call.cancel()
+                    Log.d("FAIL", e.message)
+
+                    // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
+                    runOnUiThread {
+                        val responseText: TextView = findViewById(R.id.licensePlate)
+                        responseText.text = e.toString()
+                    }
+                }
+                @SuppressLint("SetTextI18n")
+                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                    runOnUiThread {
+                        val responseText: TextView = findViewById(R.id.licensePlate)
+                        try {
+                            responseText.text = response.body?.string()
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+        })
+    }
+    private fun connectServer() {
+        val responseText: TextView = findViewById(R.id.licensePlate)
+
+        responseText.text = "Sending the Files. Please Wait ..."
+
+        val postUrl = "https://f5066d910caf.ngrok.io/predict"
+        val multipartBodyBuilder: MultipartBody.Builder = MultipartBody.Builder().setType(MultipartBody.FORM)
+        for (i in selectedImagesPaths!!.indices) {
+            val options: BitmapFactory.Options = BitmapFactory.Options()
+            options.inPreferredConfig = Bitmap.Config.RGB_565
+            val stream = ByteArrayOutputStream()
+            try {
+                // Read BitMap by file path.
+                val bitmap: Bitmap = BitmapFactory.decodeFile(selectedImagesPaths!![i], options)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            } catch (e: java.lang.Exception) {
+                responseText.text = "Please Make Sure the Selected File is an Image."
+                return
+            }
+            val byteArray: ByteArray = stream.toByteArray()
+            multipartBodyBuilder.addFormDataPart(
+                "image",
+                "Android_Flask_$i.jpg",
+                RequestBody.create("image/*jpg".toMediaTypeOrNull(), byteArray)
+            )
+        }
+        val postBodyImage: RequestBody = multipartBodyBuilder.build()
+        postRequest(postUrl, postBodyImage)
+    }
 }
+
+
