@@ -9,6 +9,8 @@ import { stylesPaperbase, theme, Copyright } from "./styles/Styles";
 import { Switch, Redirect, Route } from "react-router-dom";
 import ImpoundList from "./Content/ImpoundList";
 import EditImpound from "./Content/EditImpound";
+import NotificationDetail from "./Content/NotificationDetail";
+import NotificationList from "./Content/NotificationList";
 
 
 
@@ -45,7 +47,15 @@ function AgentDashboard(props) {
             <Switch>
               <Route path={"/agent_dashboard/impounds"}  component={ImpoundList} />
               <Route path={"/agent_dashboard/impound/:id"}  component={EditImpound} />
-
+              <Route
+                path={"/agent_dashboard/notifications"}
+                exact
+                component={NotificationList}
+              />
+              <Route
+                path={"/agent_dashboard/notifications/:id"}
+                component={NotificationDetail}
+              />
               <Redirect to={"/agent_dashboard/impounds"} />
             </Switch>
           </main>

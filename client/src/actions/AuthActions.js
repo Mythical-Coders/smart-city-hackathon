@@ -56,6 +56,7 @@ export const logoutUser = () => async (dispatch) => {
     dispatch({ type: "CLEAR_REPORT_PLACE" });
     dispatch({ type: "CLEAR_UPLOAD_IMAGE" });
     dispatch({ type: "CLEAR_REPORT" });
+    dispatch({ type: "CLEAR_NOTIFICATION" });
   } catch (err) {
     dispatch({ type: "AUTH_END_LOADING" });
     dispatch({ type: "PROFILE_END_LOADING" });
